@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BHAJO STORE - Mobile Responsive UI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Include jsPDF for reliable client-side PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -81,7 +79,6 @@
             flex: 1;
             background: #0b0f19;
             overflow: hidden;
-            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .table-header-row {
@@ -123,6 +120,7 @@
         .td-item input { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 14px; outline: none; box-sizing: border-box; }
         .td-item input::placeholder { color: #9aa0a6; }
 
+        /* Inline Suggestions Dropdown for Main Grid Items Input */
         .suggestions-list-main {
             position: absolute; 
             top: 100%; 
@@ -266,8 +264,8 @@
         .manager-form-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-end; position: relative; flex-shrink: 0; }
         .manager-input-group { flex-grow: 1; display: flex; flex-direction: column; position: relative; }
         .manager-input-group label { font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; }
-        .manager-input-group input[type="text"], .manager-input-group input[type="password"] { padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 0.95rem; outline: none; height: 42px; width: 100%; }
-        .manager-input-group input[type="text"]:focus, .manager-input-group input[type="password"]:focus { border-color: #38bdf8; }
+        .manager-input-group input[type="text"] { padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 0.95rem; outline: none; height: 42px; width: 100%; }
+        .manager-input-group input[type="text"]:focus { border-color: #38bdf8; }
 
         .suggestions-dropdown {
             position: absolute; top: 100%; left: 0; right: 0; background: #0f172a;
@@ -290,143 +288,9 @@
         .manager-delete-btn { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 6px 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
         .manager-delete-btn:hover { background: #ef4444; color: #fff; }
 
-        .professional-popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(11, 15, 25, 0.85);
-            backdrop-filter: blur(5px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .professional-popup-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .professional-popup-box {
-            background: #161f30;
-            border: 1px solid #23304a;
-            width: 90%;
-            max-width: 380px;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            transform: translateY(20px) scale(0.95);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-align: center;
-            position: relative;
-            color: #f1f3f4;
-        }
-
-        .professional-popup-overlay.active .professional-popup-box {
-            transform: translateY(0) scale(1);
-        }
-
-        .popup-icon-container {
-            width: 55px;
-            height: 55px;
-            background: rgba(0, 230, 118, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px auto;
-            color: #00e676;
-            font-size: 24px;
-        }
-
-        .professional-popup-box h3 {
-            font-size: 20px;
-            margin-bottom: 8px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .professional-popup-box p {
-            font-size: 14px;
-            color: #9ca3af;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
-
-        .popup-btn-group {
-            display: flex;
-            gap: 12px;
-        }
-
-        .popup-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            border: none;
-            transition: background 0.2s;
-        }
-
-        .popup-btn-primary {
-            background: linear-gradient(270deg, #00e676, #00bcd4);
-            color: #ffffff;
-        }
-
-        .popup-btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .popup-btn-secondary {
-            background: #23304a;
-            color: #9ca3af;
-        }
-
-        .popup-btn-secondary:hover {
-            background: #324468;
-            color: #ffffff;
-        }
-
-        .password-popup-input {
-            width: 100%;
-            padding: 12px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .password-popup-input:focus {
-            border-color: #38bdf8;
-        }
-        .change-pwd-link {
-            display: block;
-            margin-top: 12px;
-            color: #38bdf8;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: underline;
-            background: none;
-            border: none;
-            width: 100%;
-            text-align: center;
-        }
-        .change-pwd-link:hover {
-            color: #00e676;
-        }
-
         .keyboard-wrapper {
             width: 100%; display: flex; flex-direction: column; align-items: flex-end;
-            position: absolute; bottom: 0; left: 0; z-index: 300000;
+            position: absolute; bottom: 0; left: 0; z-index: 3000;
             transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-sizing: border-box;
         }
         .keyboard-wrapper.minimized { transform: translateY(100%); }
@@ -529,7 +393,7 @@
             <span style="--i:1">B</span><span style="--i:2">H</span><span style="--i:3">A</span><span style="--i:4">J</span><span style="--i:5">O</span>&nbsp;<span style="--i:6">S</span><span style="--i:7">T</span><span style="--i:8">O</span><span style="--i:9">R</span><span style="--i:10">E</span>
         </div>
 
-        <div class="store-table" id="store-table-container">
+        <div class="store-table">
             <div class="table-header-row">
                 <div class="th-no">No.</div>
                 <div class="th-item">Items Name</div>
@@ -557,54 +421,6 @@
                 <div class="footer-bottom-btns">
                     <button class="footer-btn-undo" id="undo-btn">Undo</button>
                     <button class="footer-btn-right" id="refresh-btn">Refresh</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PDF Name Popup for Save button -->
-        <div id="pdfNamePopup" class="professional-popup-overlay">
-            <div class="professional-popup-box">
-                <div class="popup-icon-container">
-                    <i class="fa-solid fa-file-pdf"></i>
-                </div>
-                <h3>Enter PDF Name</h3>
-                <p>Please enter a name for the PDF file to save in your storage.</p>
-                <input type="text" id="pdfNameInput" class="password-popup-input" placeholder="Enter file name..." readonly value="BhajoStore_Bill">
-                <div class="popup-btn-group">
-                    <button class="popup-btn popup-btn-secondary" onclick="closePdfNamePopup()">Cancel</button>
-                    <button class="popup-btn popup-btn-primary" onclick="generateAndSavePDF()">Save PDF</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="passwordPopup" class="professional-popup-overlay">
-            <div class="professional-popup-box">
-                <div class="popup-icon-container">
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <h3 id="pwdPopupTitle">Enter Password</h3>
-                <p id="pwdPopupDesc">Please enter password to access Manage Items.</p>
-                
-                <input type="password" id="popupPasswordInput" class="password-popup-input" placeholder="Enter password..." readonly>
-                
-                <div class="popup-btn-group" id="pwdPopupBtnGroup">
-                    <button class="popup-btn popup-btn-secondary" onclick="closePasswordPopup()">Cancel</button>
-                    <button class="popup-btn popup-btn-primary" onclick="verifyPasswordAction()">Submit</button>
-                </div>
-
-                <button class="change-pwd-link" id="changePasswordLink" onclick="openChangePasswordMode()">Change Password</button>
-            </div>
-        </div>
-
-        <div id="professionalPopup" class="professional-popup-overlay">
-            <div class="professional-popup-box">
-                <div class="popup-icon-container">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-                <h3 id="popupTitle">Success</h3>
-                <p id="popupMessage">Data saved successfully!</p>
-                <div class="popup-btn-group">
-                    <button class="popup-btn popup-btn-primary" onclick="closeProfessionalPopup()">OK</button>
                 </div>
             </div>
         </div>
@@ -742,259 +558,6 @@
 
         let cachedSheetItems = [];
 
-        function showProfessionalPopup(title, message) {
-            document.getElementById('popupTitle').innerText = title;
-            document.getElementById('popupMessage').innerText = message;
-            document.getElementById('professionalPopup').classList.add('active');
-        }
-
-        function closeProfessionalPopup() {
-            document.getElementById('professionalPopup').classList.remove('active');
-        }
-
-        // PDF Name Popup handlers
-        const pdfNameInput = document.getElementById('pdfNameInput');
-        if (pdfNameInput) {
-            pdfNameInput.addEventListener('click', (e) => {
-                e.stopPropagation();
-                activeInput = pdfNameInput;
-                activeInputType = 'pdfName';
-                alphabetKeyboard.classList.remove('hidden');
-                calculatorKeyboard.classList.add('hidden');
-                showKeyboard();
-            });
-        }
-
-        function openPdfNamePopup() {
-            if (initialRows.length === 0 || (initialRows.length === 1 && (!initialRows[0].name.trim() || !initialRows[0].amount.trim() || initialRows[0].amount === '0000'))) {
-                showProfessionalPopup('Warning', 'Please add at least one valid item and amount!');
-                renderRows();
-                return;
-            }
-            document.getElementById('pdfNameInput').value = "BhajoStore_Bill_" + new Date().toISOString().slice(0,10);
-            document.getElementById('pdfNamePopup').classList.add('active');
-        }
-
-        function closePdfNamePopup() {
-            document.getElementById('pdfNamePopup').classList.remove('active');
-            hideKeyboard();
-        }
-
-        function generateAndSavePDF() {
-            const fileName = (document.getElementById('pdfNameInput').value.trim() || "BhajoStore_Bill") + ".pdf";
-            closePdfNamePopup();
-
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                // Page Background (#073B4C)
-                doc.setFillColor(7, 59, 76);
-                doc.rect(0, 0, 210, 297, "F");
-
-                // Header Background
-                doc.setFillColor(11, 15, 25);
-                doc.rect(0, 0, 210, 40, "F");
-
-                // Title
-                doc.setTextColor(56, 189, 248);
-                doc.setFontSize(22);
-                doc.setFont("helvetica", "bold");
-                doc.text("BHAJO STORE", 105, 22, { align: "center" });
-
-                // Subtitle / Date
-                doc.setTextColor(156, 163, 175);
-                doc.setFontSize(10);
-                doc.text("Date: " + new Date().toLocaleString(), 105, 32, { align: "center" });
-
-                // Table Header
-                let startY = 55;
-                doc.setFillColor(31, 41, 55);
-                doc.rect(14, startY, 182, 10, "F");
-
-                doc.setTextColor(56, 189, 248);
-                doc.setFontSize(11);
-                doc.setFont("helvetica", "bold");
-                doc.text("No.", 20, startY + 7);
-                doc.text("Items Name", 40, startY + 7);
-                doc.text("Calculation", 110, startY + 7);
-                doc.text("Amount", 185, startY + 7, { align: "right" });
-
-                // Table Rows
-                startY += 10;
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.setTextColor(241, 243, 244);
-
-                let total = 0;
-                let validIdx = 0; // Fix: use a separate counter for valid rows so row number 1 is not skipped or filtered out incorrectly
-                initialRows.forEach((row, idx) => {
-                    if (!row.name.trim() && !row.amount.trim()) return;
-                    let amt = parseFloat(row.amount) || 0;
-                    total += amt;
-                    validIdx++;
-
-                    if (startY > 270) {
-                        doc.addPage();
-                        doc.setFillColor(7, 59, 76);
-                        doc.rect(0, 0, 210, 297, "F");
-                        startY = 20;
-                    }
-
-                    // Zebra striping
-                    if (validIdx % 2 === 0) {
-                        doc.setFillColor(18, 24, 36);
-                        doc.rect(14, startY, 182, 8, "F");
-                    }
-
-                    doc.text(validIdx.toString(), 20, startY + 6);
-                    doc.text(row.name || "", 40, startY + 6);
-                    doc.text(row.calc || "", 110, startY + 6);
-                    doc.text(amt.toFixed(2), 185, startY + 6, { align: "right" });
-
-                    startY += 8;
-                });
-
-                // Grand Total
-                startY += 6;
-                doc.setFillColor(31, 41, 55);
-                doc.rect(14, startY, 182, 12, "F");
-                doc.setTextColor(0, 230, 118);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(12);
-                doc.text("Grand Total:", 20, startY + 8);
-                doc.text(total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 185, startY + 8, { align: "right" });
-
-                // In the APK, AndroidPdf writes the file directly to Downloads/Bhajo Store.
-                // The Blob fallback keeps the same HTML working in ordinary browsers.
-                savePdfFile(doc, fileName);
-                showProfessionalPopup("Success", "PDF saved successfully to your storage!");
-            } catch (err) {
-                console.error("PDF generation error:", err);
-                showProfessionalPopup("Error", "Failed to generate PDF!");
-            }
-        }
-
-        function savePdfFile(doc, fileName) {
-            if (window.AndroidPdf && typeof window.AndroidPdf.savePdf === "function") {
-                const dataUri = doc.output("datauristring");
-                const base64Pdf = dataUri.substring(dataUri.indexOf(",") + 1);
-                const result = window.AndroidPdf.savePdf(base64Pdf, fileName);
-
-                if (result !== "OK") {
-                    throw new Error(result || "Unable to save PDF");
-                }
-                return;
-            }
-
-            const pdfBlob = doc.output("blob");
-            const pdfUrl = URL.createObjectURL(pdfBlob);
-            const link = document.createElement("a");
-            link.href = pdfUrl;
-            link.download = fileName;
-            link.style.display = "none";
-            document.body.appendChild(link);
-            link.click();
-            setTimeout(() => {
-                link.remove();
-                URL.revokeObjectURL(pdfUrl);
-            }, 60000);
-        }
-
-        let passwordPopupMode = "verify";
-        let tempOldPasswordForChange = "";
-
-        function openPasswordPopup() {
-            passwordPopupMode = "verify";
-            document.getElementById('pwdPopupTitle').innerText = "Enter Password";
-            document.getElementById('pwdPopupDesc').innerText = "Please enter password to access Manage Items.";
-            document.getElementById('popupPasswordInput').value = "";
-            document.getElementById('popupPasswordInput').placeholder = "Enter password...";
-            document.getElementById('changePasswordLink').style.display = "block";
-            document.getElementById('passwordPopup').classList.add('active');
-        }
-
-        function closePasswordPopup() {
-            document.getElementById('passwordPopup').classList.remove('active');
-            hideKeyboard();
-        }
-
-        function openChangePasswordMode() {
-            passwordPopupMode = "old_verify";
-            document.getElementById('pwdPopupTitle').innerText = "Change Password";
-            document.getElementById('pwdPopupDesc').innerText = "Enter your Old Password.";
-            document.getElementById('popupPasswordInput').value = "";
-            document.getElementById('popupPasswordInput').placeholder = "Old password...";
-            document.getElementById('changePasswordLink').style.display = "none";
-        }
-
-        function verifyPasswordAction() {
-            const val = document.getElementById('popupPasswordInput').value.trim();
-            if(!val) {
-                showProfessionalPopup("Warning", "Password cannot be empty!");
-                return;
-            }
-
-            if(passwordPopupMode === "verify") {
-                fetch(BHAIJO_STORE_WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ action: "VERIFY_PASSWORD", enteredPassword: val })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.status === "success") {
-                        closePasswordPopup();
-                        openItemManagerModal();
-                    } else {
-                        showProfessionalPopup("Error", "Incorrect Password!");
-                    }
-                })
-                .catch(err => {
-                    console.error("Password verification error:", err);
-                    showProfessionalPopup("Error", "Network error connecting to Sheet!");
-                });
-
-            } else if(passwordPopupMode === "old_verify") {
-                tempOldPasswordForChange = val;
-                passwordPopupMode = "new_add";
-                document.getElementById('pwdPopupTitle').innerText = "New Password";
-                document.getElementById('pwdPopupDesc').innerText = "Enter your New Password.";
-                document.getElementById('popupPasswordInput').value = "";
-                document.getElementById('popupPasswordInput').placeholder = "New password...";
-
-            } else if(passwordPopupMode === "new_add") {
-                fetch(BHAIJO_STORE_WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ action: "CHANGE_PASSWORD", oldPassword: tempOldPasswordForChange, newPassword: val })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.status === "success") {
-                        closePasswordPopup();
-                        showProfessionalPopup("Success", "Password updated successfully in Google Sheet!");
-                    } else {
-                        showProfessionalPopup("Error", data.message || "Purana password galat hai!");
-                    }
-                })
-                .catch(err => {
-                    console.error("Change password error:", err);
-                    showProfessionalPopup("Error", "Network error connecting to Sheet!");
-                });
-            }
-        }
-
-        const popupPasswordInput = document.getElementById('popupPasswordInput');
-        if (popupPasswordInput) {
-            popupPasswordInput.addEventListener('click', (e) => {
-                e.stopPropagation();
-                activeInput = popupPasswordInput;
-                activeInputType = 'password';
-                alphabetKeyboard.classList.remove('hidden');
-                calculatorKeyboard.classList.add('hidden');
-                showKeyboard();
-            });
-        }
-
         function syncItemToGoogleSheet(itemName, actionType = "ADD") {
             if (!itemName || itemName.trim() === "") return;
             fetch(BHAIJO_STORE_WEB_APP_URL, {
@@ -1025,7 +588,6 @@
         const storeFooter = document.getElementById('store-footer');
         const keyboardWrapper = document.getElementById('keyboard-wrapper');
         const hideShowIcon = document.getElementById('hide-show-icon');
-        const storeTableContainer = document.getElementById('store-table-container');
 
         const alphabetKeyboard = document.getElementById('alphabet-keyboard');
         const calculatorKeyboard = document.getElementById('calculator-keyboard');
@@ -1082,6 +644,7 @@
             }
         }
 
+        // Inline filter items function for grid items
         function filterGridItems(index) {
             const inputField = document.querySelector(`.item-name-input[data-index="${index}"]`);
             const suggestionBox = document.getElementById(`suggestions-list-${index}`);
@@ -1158,7 +721,6 @@
                 storeFooter.style.position = 'absolute';
                 storeFooter.style.bottom = kbHeight + 'px';
                 storeFooter.style.zIndex = '1001';
-                storeTableContainer.style.maxHeight = `calc(100dvh - 70px - ${kbHeight}px - ${storeFooter.offsetHeight}px)`;
             }
         }
 
@@ -1175,7 +737,6 @@
             hideShowIcon.innerText = '▲';
             storeFooter.style.position = 'relative';
             storeFooter.style.bottom = 'auto';
-            storeTableContainer.style.maxHeight = 'none';
             document.querySelectorAll('.suggestions-list-main').forEach(box => box.style.display = 'none');
         }
 
@@ -1234,7 +795,7 @@
                 renderRows();
                 backupRows = [];
             } else {
-                showProfessionalPopup('Notice', 'Undo karne ke liye koi data nahi hai!');
+                alert('Undo karne ke liye koi data nahi hai!');
             }
         });
 
@@ -1247,9 +808,13 @@
             grandTotalDisplay.innerText = sum.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
         }
 
-        // SAVE button click now triggers PDF name input popup using virtual keyboard
         saveStoreBtn.addEventListener('click', () => {
-            openPdfNamePopup();
+            if (initialRows.length === 0 || (initialRows.length === 1 && (!initialRows[0].name.trim() || !initialRows[0].amount.trim() || initialRows[0].amount === '0000'))) {
+                alert('Please add at least one valid item and amount!');
+                renderRows();
+                return;
+            }
+            alert('Data saved successfully!');
             hideKeyboard();
         });
 
@@ -1422,10 +987,6 @@
                 } else if (activeInput.id === 'itemSearch') {
                     activeInput.value = activeInput.value.slice(0, -1);
                     filterItems();
-                } else if (activeInput.id === 'popupPasswordInput') {
-                    activeInput.value = activeInput.value.slice(0, -1);
-                } else if (activeInput.id === 'pdfNameInput') {
-                    activeInput.value = activeInput.value.slice(0, -1);
                 }
             };
 
@@ -1446,7 +1007,6 @@
 
         document.querySelectorAll('#alphabet-keyboard .key').forEach(key => {
             key.addEventListener('click', () => {
-                if (key.closest('#symbol-layout')) return;
                 if (!activeInput) return;
                 const keyText = key.innerText;
 
@@ -1463,10 +1023,6 @@
                     } else if (activeInput.id === 'itemSearch') {
                         activeInput.value += ' ';
                         filterItems();
-                    } else if (activeInput.id === 'popupPasswordInput') {
-                        activeInput.value += ' ';
-                    } else if (activeInput.id === 'pdfNameInput') {
-                        activeInput.value += ' ';
                     }
                 } else if (key.id === 'enter-alphabet-btn' || keyText === '↵') {
                     if (activeInputType === 'name' && activeInput.classList.contains('item-name-input')) {
@@ -1487,10 +1043,6 @@
                         }
                     } else if (activeInput.id === 'itemSearch') {
                         addItem();
-                    } else if (activeInput.id === 'popupPasswordInput') {
-                        verifyPasswordAction();
-                    } else if (activeInput.id === 'pdfNameInput') {
-                        generateAndSavePDF();
                     }
                 } else if (!key.classList.contains('special') && key.id !== 'shift-btn') {
                     if (activeInputType === 'name' && activeInput.classList.contains('item-name-input')) {
@@ -1503,10 +1055,6 @@
                     } else if (activeInput.id === 'itemSearch') {
                         activeInput.value += keyText;
                         filterItems();
-                    } else if (activeInput.id === 'popupPasswordInput') {
-                        activeInput.value += keyText;
-                    } else if (activeInput.id === 'pdfNameInput') {
-                        activeInput.value += keyText;
                     }
                     if (shiftState === 1) { shiftState = 0; updateKeyboardCase(); }
                 }
@@ -1521,11 +1069,6 @@
         const suggestionsBox = document.getElementById('suggestionsBox');
 
         saveItemsNameBtn.addEventListener('click', () => {
-            openPasswordPopup();
-            hideKeyboard();
-        });
-
-        function openItemManagerModal() {
             itemManagerModal.classList.remove('hidden');
             hideKeyboard();
             if (cachedSheetItems && cachedSheetItems.length > 0) {
@@ -1534,7 +1077,7 @@
                 managerTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#38bdf8; padding:20px;">Loading items from Google Sheet...</td></tr>`;
             }
             fetchItemsFromGoogleSheet();
-        }
+        });
 
         function fetchItemsFromGoogleSheet() {
             fetch(BHAIJO_STORE_WEB_APP_URL)
@@ -1600,7 +1143,7 @@
         function addItem() {
             const itemName = itemSearchInput.value.trim();
             if (!itemName) {
-                showProfessionalPopup('Warning', 'Please enter an item name!');
+                alert('Please enter an item name!');
                 return;
             }
 
@@ -1737,10 +1280,6 @@
                     activeInput.value = initialRows[index][field];
                     checkFieldsForDisclaimer();
                     filterGridItems(index);
-                } else if (activeInput && activeInput.id === 'popupPasswordInput') {
-                    popupPasswordInput.value += key.innerText;
-                } else if (activeInput && activeInput.id === 'pdfNameInput') {
-                    pdfNameInput.value += key.innerText;
                 }
             });
         });
@@ -1760,10 +1299,6 @@
                         calculateTotal();
                         filterGridItems(index);
                     }
-                } else if (activeInput && activeInput.id === 'popupPasswordInput') {
-                    popupPasswordInput.value = popupPasswordInput.value.slice(0, -1);
-                } else if (activeInput && activeInput.id === 'pdfNameInput') {
-                    pdfNameInput.value = pdfNameInput.value.slice(0, -1);
                 }
             });
         });
@@ -1773,6 +1308,7 @@
                 const char = key.getAttribute('data-char') || key.innerText;
                 if (activeInput && activeInput.id === 'itemSearch') {
                     itemSearchInput.value += char;
+                    filterItems();
                 } else if (activeInput && activeInput.classList.contains('item-name-input')) {
                     const index = parseInt(activeInput.getAttribute('data-index'));
                     const field = activeInput.getAttribute('data-field');
@@ -1780,10 +1316,6 @@
                     activeInput.value = initialRows[index][field];
                     checkFieldsForDisclaimer();
                     filterGridItems(index);
-                } else if (activeInput && activeInput.id === 'popupPasswordInput') {
-                    popupPasswordInput.value += char;
-                } else if (activeInput && activeInput.id === 'pdfNameInput') {
-                    pdfNameInput.value += char;
                 }
             });
         });
