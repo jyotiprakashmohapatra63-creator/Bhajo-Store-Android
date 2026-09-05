@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="or">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BHAJO STORE - Mobile Responsive UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Include jsPDF for reliable client-side PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #f1f3f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100dvh;
+            overflow: hidden;
+        }
+
+        .mobile-screen {
+            width: 100vw;
+            height: 100dvh;
+            max-width: 100%;
+            max-height: 100dvh;
+            background: #121824;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: none;
+            border: none;
+            overflow: hidden;
+        }
+
+        .store-header {
+            background: #0b0f19;
+            text-align: center;
+            padding: 16px;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            border-bottom: 2px solid #374151;
+            flex-shrink: 0;
+        }
+
+        .store-header span {
+            display: inline-block;
+            background: linear-gradient(270deg, #ff5252, #ffeb3b, #00e676, #00bcd4, #e040fb, #ff5252);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGradient 5s ease infinite, smoothWave 2.5s ease-in-out infinite;
+            animation-delay: calc(0.08s * var(--i));
+        }
+
+        @keyframes textGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes smoothWave {
+            0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+            50% { transform: translateY(-4px) scale(1.05); filter: drop-shadow(0 6px 12px rgba(0,230,118,0.4)); }
+        }
+
+        .store-table {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            background: #0b0f19;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .table-header-row {
+            display: flex;
+            background: #1f2937;
+            color: #38bdf8;
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 2px solid #374151;
+            flex-shrink: 0;
+        }
+
+        .th-no { width: 40px; padding: 12px 2px; text-align: center; border-right: 1px solid #374151; flex-shrink: 0; }
+        .th-item { flex: 1.8; padding: 12px 6px; text-align: left; border-right: 1px solid #374151; min-width: 0; }
+        .th-calc { flex: 1.2; padding: 12px 6px; text-align: left; border-right: 1px solid #374151; min-width: 0; }
+        .th-amount { flex: 1.3; padding: 12px 6px; text-align: right; border-right: 1px solid #374151; min-width: 70px; }
+        .th-action { width: 50px; padding: 12px 2px; text-align: center; flex-shrink: 0; }
+
+        .table-body {
+            flex: 1;
+            overflow-y: auto;
+            background: #121824;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #374151;
+            transition: background 0.2s ease;
+        }
+
+        .item-row:hover { background: rgba(31, 41, 55, 0.4); }
+        .highlight-row { background-color: rgba(56, 189, 248, 0.3) !important; }
+
+        .td-no { width: 40px; padding: 12px 2px; text-align: center; border-right: 1px solid #374151; color: #4ade80; font-weight: 700; flex-shrink: 0; }
+        .td-item { flex: 1.8; padding: 12px 6px; border-right: 1px solid #374151; position: relative; min-width: 0; }
+        .td-item input { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 14px; outline: none; box-sizing: border-box; }
+        .td-item input::placeholder { color: #9aa0a6; }
+
+        .suggestions-list-main {
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            background: #1a1a2e; 
+            border: 1px solid #00f2fe; 
+            z-index: 1000; 
+            width: calc(100% - 10px); 
+            max-height: 150px; 
+            overflow-y: auto; 
+            display: none;
+        }
+        .suggestion-div-main {
+            padding: 8px;
+            cursor: pointer;
+            color: #fff;
+            border-bottom: 1px solid #374151;
+            font-size: 13px;
+        }
+        .suggestion-div-main:hover {
+            background: #1e293b;
+            color: #38bdf8;
+        }
+
+        .td-calc { flex: 1.2; padding: 12px 6px; border-right: 1px solid #374151; min-width: 0; }
+        .td-calc input { width: 100%; background: transparent; border: none; color: #f472b6; font-weight: 600; font-size: 14px; outline: none; box-sizing: border-box; }
+        .td-calc input::placeholder { color: #9aa0a6; }
+
+        .td-amount { flex: 1.3; padding: 12px 6px; border-right: 1px solid #374151; text-align: right; min-width: 70px; }
+        .td-amount input { width: 100%; background: transparent; border: none; color: #00e676; font-weight: 700; font-size: 15px; text-align: right; outline: none; text-shadow: 0 0 10px rgba(0, 230, 118, 0.4); box-sizing: border-box; }
+        .td-amount input::placeholder { color: #9aa0a6; }
+
+        .td-action { width: 50px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+
+        .delete-btn {
+            background: #1f2937;
+            color: #ff5252;
+            border: 1px solid #374151;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .delete-btn:hover { background: #ff5252; color: #0b0f19; box-shadow: 0 0 10px #ff5252; }
+
+        .add-item-container {
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0b0f19;
+            border-top: 2px solid #374151;
+            flex-shrink: 0;
+        }
+
+        .disclaimer-text { color: #ff5252; font-size: 12px; font-weight: 700; opacity: 0; transition: opacity 0.3s ease; }
+        .disclaimer-text.show { opacity: 1; }
+
+        @keyframes textGlowPulse {
+            0% { text-shadow: 0 0 2px rgba(56, 189, 248, 0.4), 0 0 8px rgba(56, 189, 248, 0.2); }
+            50% { text-shadow: 0 0 8px rgba(56, 189, 248, 1), 0 0 16px rgba(56, 189, 248, 0.8); }
+            100% { text-shadow: 0 0 2px rgba(56, 189, 248, 0.4), 0 0 8px rgba(56, 189, 248, 0.2); }
+        }
+
+        .empty-text-glow { animation: textGlowPulse 1.4s infinite ease-in-out; }
+        .empty-text-glow::placeholder { color: #38bdf8 !important; opacity: 1; }
+
+        .add-btn {
+            position: relative;
+            background: linear-gradient(270deg, #ff6d00, #ff9100, #ffab00, #ff6d00);
+            background-size: 400% 400%;
+            color: white; border: none; padding: 10px 16px; border-radius: 25px;
+            font-weight: 700; font-size: 13px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 109, 0, 0.4);
+            animation: gradientAnimation 6s ease infinite; transition: transform 0.25s ease;
+        }
+        .add-btn:hover { transform: translateY(-2px) scale(1.02); }
+
+        .save-items-name-btn {
+            position: relative;
+            background: linear-gradient(270deg, #38bdf8, #00bcd4, #2196f3, #38bdf8);
+            background-size: 400% 400%;
+            color: #ffffff; border: none; padding: 10px 14px; border-radius: 25px;
+            font-weight: 800; font-size: 13px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+            animation: gradientAnimation 6s ease infinite; transition: transform 0.25s ease;
+        }
+        .save-items-name-btn:hover { transform: translateY(-2px) scale(1.02); }
+
+        .store-footer-container {
+            display: flex; background: #0b0f19; border-top: 2px solid #374151;
+            padding: 12px 16px; gap: 12px; align-items: center; flex-shrink: 0;
+            position: relative; width: 100%; transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer-left-side { flex: 1.4; display: flex; flex-direction: column; gap: 6px; }
+        .footer-btn-left { background: #121824; color: #9aa0a6; border: 1px solid #374151; padding: 6px; border-radius: 20px; font-weight: 600; font-size: 12px; text-align: center; }
+        .footer-display-center { background: #121824; color: #00e676; border: 1px solid #374151; padding: 12px 8px; border-radius: 20px; font-weight: 800; font-size: 22px; text-align: center; box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6); text-shadow: 0 0 10px rgba(0, 230, 118, 0.4); }
+        .footer-right-side { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+        .save-btn-store {
+            background: linear-gradient(270deg, #00e676, #00bcd4, #4285f4, #00e676);
+            background-size: 400% 400%; color: #ffffff; border: none; padding: 10px; border-radius: 25px;
+            font-weight: 800; font-size: 13px; width: 100%; text-align: center; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3); animation: gradientAnimation 6s ease infinite;
+        }
+
+        .footer-bottom-btns { display: flex; gap: 6px; }
+        .footer-btn-right { background: linear-gradient(270deg, #ff5252, #ff6d00, #e040fb, #ff5252); background-size: 400% 400%; color: white; border: none; padding: 9px 4px; border-radius: 20px; font-weight: 700; font-size: 12px; flex: 1; text-align: center; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3); animation: gradientAnimation 6s ease infinite; }
+        .footer-btn-undo { background: linear-gradient(270deg, #38bdf8, #818cf8, #38bdf8); background-size: 400% 400%; color: #ffffff; border: none; padding: 9px 4px; border-radius: 20px; font-weight: 800; font-size: 12px; flex: 1; text-align: center; cursor: pointer; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3); animation: gradientAnimation 6s ease infinite; }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .item-manager-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            background: rgba(11, 15, 25, 0.95); z-index: 2000; display: flex;
+            justify-content: center; align-items: center; padding: 12px; box-sizing: border-box;
+            transition: opacity 0.3s ease;
+        }
+        .item-manager-modal.hidden { display: none !important; }
+
+        .item-manager-card {
+            width: 100%; max-width: 100%; height: 100%; max-height: 100dvh;
+            background: #1e293b; padding: 16px; border-radius: 0px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; border: none;
+        }
+
+        .manager-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid #334155; padding-bottom: 8px; flex-shrink: 0; }
+        .manager-header-row h2 { color: #38bdf8; font-size: 1.3rem; }
+        .close-manager-btn { background: transparent; border: none; color: #94a3b8; font-size: 22px; cursor: pointer; padding: 4px 8px; }
+        .close-manager-btn:hover { color: #fff; }
+
+        .manager-form-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-end; position: relative; flex-shrink: 0; }
+        .manager-input-group { flex-grow: 1; display: flex; flex-direction: column; position: relative; }
+        .manager-input-group label { font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; }
+        .manager-input-group input[type="text"], .manager-input-group input[type="password"] { padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff; font-size: 0.95rem; outline: none; height: 42px; width: 100%; }
+        .manager-input-group input[type="text"]:focus, .manager-input-group input[type="password"]:focus { border-color: #38bdf8; }
+
+        .suggestions-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0; background: #0f172a;
+            border: 1px solid #38bdf8; border-top: none; border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px; z-index: 99; max-height: 150px; overflow-y: auto; display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .suggestion-item { padding: 10px 12px; font-size: 0.9rem; color: #f8fafc; cursor: pointer; border-bottom: 1px solid #1e293b; }
+        .suggestion-item:hover { background: #1e293b; color: #38bdf8; }
+
+        .manager-add-btn { background: #0284c7; border: none; cursor: pointer; font-weight: 600; color: #fff; display: flex; align-items: center; justify-content: center; gap: 6px; height: 42px; padding: 0 18px; border-radius: 6px; transition: background 0.2s; flex-shrink: 0; }
+        .manager-add-btn:hover { background: #0369a1; }
+
+        .manager-table-responsive { overflow-y: auto; flex: 1; border: 1px solid #334155; border-radius: 6px; background: #0f172a; }
+        .manager-table-responsive table { width: 100%; border-collapse: collapse; text-align: left; }
+        .manager-table-responsive th { background-color: #1e293b; color: #38bdf8; font-weight: 600; padding: 12px; border-bottom: 2px solid #334155; font-size: 0.9rem; position: sticky; top: 0; z-index: 10; }
+        .manager-table-responsive td { padding: 12px; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+        .manager-table-responsive tbody tr:hover { background-color: rgba(51, 65, 85, 0.4); }
+        .manager-col-no { color: #4ade80; font-weight: bold; }
+        .manager-delete-btn { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 6px 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        .manager-delete-btn:hover { background: #ef4444; color: #fff; }
+
+        .professional-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .professional-popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .professional-popup-box {
+            background: #161f30;
+            border: 1px solid #23304a;
+            width: 90%;
+            max-width: 380px;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            position: relative;
+            color: #f1f3f4;
+        }
+
+        .professional-popup-overlay.active .professional-popup-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .popup-icon-container {
+            width: 55px;
+            height: 55px;
+            background: rgba(0, 230, 118, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+            color: #00e676;
+            font-size: 24px;
+        }
+
+        .professional-popup-box h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .professional-popup-box p {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .popup-btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .popup-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+
+        .popup-btn-primary {
+            background: linear-gradient(270deg, #00e676, #00bcd4);
+            color: #ffffff;
+        }
+
+        .popup-btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .popup-btn-secondary {
+            background: #23304a;
+            color: #9ca3af;
+        }
+
+        .popup-btn-secondary:hover {
+            background: #324468;
+            color: #ffffff;
+        }
+
+        .password-popup-input {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .password-popup-input:focus {
+            border-color: #38bdf8;
+        }
+        .change-pwd-link {
+            display: block;
+            margin-top: 12px;
+            color: #38bdf8;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: center;
+        }
+        .change-pwd-link:hover {
+            color: #00e676;
+        }
+
+        .keyboard-wrapper {
+            width: 100%; display: flex; flex-direction: column; align-items: flex-end;
+            position: absolute; bottom: 0; left: 0; z-index: 300000;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-sizing: border-box;
+        }
+        .keyboard-wrapper.minimized { transform: translateY(100%); }
+        .keyboard-wrapper.active { transform: translateY(0); }
+
+        .keyboard-toggle-icon {
+            background-color: #161c2d; color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.35); border-bottom: none;
+            width: 38px; height: 26px; border-top-left-radius: 6px; border-top-right-radius: 6px;
+            display: flex; justify-content: center; align-items: center; font-size: 13px; cursor: pointer;
+            margin-right: 16px; user-select: none; transition: all 0.2s ease; box-shadow: 0 0 6px rgba(168, 85, 247, 0.2);
+        }
+        .keyboard-toggle-icon:hover { background-color: #1f293d; color: #ffffff; }
+
+        .keyboard {
+            width: 100%; background-color: #141a29; padding: 12px 10px;
+            border-top-left-radius: 20px; border-top-right-radius: 20px;
+            box-shadow: 0px -8px 30px rgba(0, 0, 0, 0.6); border-top: 1.5px solid rgba(168, 85, 247, 0.4);
+            user-select: none; box-sizing: border-box;
+        }
+
+        .calc-screen {
+            width: 100%; background-color: #0d121d; border-radius: 10px; padding: 10px 14px;
+            margin-bottom: 10px; box-sizing: border-box; text-align: right; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+            border: 1.5px solid rgba(56, 189, 248, 0.55); animation: softBorderRotate 4s linear infinite;
+        }
+        .calc-history { font-size: 12px; color: #64748b; min-height: 16px; margin-bottom: 2px; word-break: break-all; }
+        .calc-output { font-size: 26px; font-weight: 700; color: #f8fafc; word-break: break-all; text-shadow: 0 0 8px rgba(248, 250, 252, 0.2); }
+        .calc-live-preview { font-size: 14px; font-weight: 500; color: #94a3b8; min-height: 18px; word-break: break-all; margin-top: 2px; }
+
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .key {
+            background-color: #1b2234; font-size: 16px; font-weight: 500; height: 42px;
+            border-radius: 8px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); cursor: pointer;
+            display: flex; justify-content: center; align-items: center; transition: all 0.15s ease;
+        }
+
+        #calculator-keyboard .key { height: 44px; border-radius: 8px; background-color: #171f30; border: 1px solid rgba(100, 116, 139, 0.3); }
+        #calculator-keyboard .key[data-action="clear"] { color: #f472b6; font-weight: 700; font-size: 18px; }
+        #calculator-keyboard .key[data-action="del"] { color: #f472b6; font-size: 18px; }
+        #calculator-keyboard .key[data-value="%"] { color: #38bdf8; font-size: 20px; font-weight: 700; }
+        #calculator-keyboard .key[data-value="/"] { color: #38bdf8; font-size: 20px; font-weight: 700; }
+        #calculator-keyboard .key[data-value="7"], #calculator-keyboard .key[data-value="8"], #calculator-keyboard .key[data-value="9"] { color: #4ade80; font-size: 20px; font-weight: 700; }
+        #calculator-keyboard .key[data-value="4"], #calculator-keyboard .key[data-value="5"], #calculator-keyboard .key[data-value="6"] { color: #fbbf24; font-size: 20px; font-weight: 700; }
+        #calculator-keyboard .key[data-value="1"], #calculator-keyboard .key[data-value="2"], #calculator-keyboard .key[data-value="3"] { color: #f472b6; font-size: 20px; font-weight: 700; }
+        #calculator-keyboard .key[data-value="00"], #calculator-keyboard .key[data-value="0"], #calculator-keyboard .key[data-value="."] { color: #38bdf8; font-size: 20px; font-weight: 700; }
+        #calculator-keyboard .key.operator[data-value="*"], #calculator-keyboard .key.operator[data-value="-"], #calculator-keyboard .key.operator[data-value="+"] { color: #fbbf24; font-size: 20px; font-weight: 700; }
+        #calculator-keyboard .key.equals { color: #38bdf8; font-size: 20px; font-weight: 700; }
+
+        .key:active { transform: scale(0.96); filter: brightness(1.4); }
+
+        @keyframes softBorderRotate {
+            0% { border-color: rgba(56, 189, 248, 0.55); box-shadow: 0 0 7px rgba(56, 189, 248, 0.28); }
+            33% { border-color: rgba(74, 222, 128, 0.55); box-shadow: 0 0 7px rgba(74, 222, 128, 0.28); }
+            66% { border-color: rgba(251, 191, 36, 0.55); box-shadow: 0 0 7px rgba(251, 191, 36, 0.28); }
+            100% { border-color: rgba(56, 189, 248, 0.55); box-shadow: 0 0 7px rgba(56, 189, 248, 0.28); }
+        }
+
+        @keyframes rainbowSlide {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .key.save-btn {
+            grid-column: span 4; font-size: 15px; font-weight: 700; color: #ffffff;
+            background: linear-gradient(270deg, #38bdf8, #4ade80, #38bdf8); background-size: 200% 200%;
+            animation: rainbowSlide 4s ease infinite; border: 1.5px solid rgba(255, 255, 255, 0.4);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+            height: 44px; border-radius: 10px; margin-top: 2px;
+        }
+
+        .keyboard-row { display: flex; justify-content: center; margin-bottom: 5px; gap: 4px; width: 100%; }
+
+        #alphabet-layout .key, #symbol-layout .key { flex: 1; height: 42px; border-radius: 6px; font-size: 20px; font-weight: 700; }
+        #alphabet-layout .key:not(.special), #symbol-layout .key:not(.special) { border: 1.5px solid rgba(56, 189, 248, 0.55); animation: softBorderRotate 4s linear infinite; }
+
+        #alphabet-layout .keyboard-row:nth-child(1) .key:not(.special) { color: #38bdf8; text-shadow: 0 0 4px rgba(56, 189, 248, 0.3); }
+        #alphabet-layout .keyboard-row:nth-child(2) .key:not(.special) { color: #4ade80; text-shadow: 0 0 4px rgba(74, 222, 128, 0.3); }
+        #alphabet-layout .keyboard-row:nth-child(3) .key:not(.special) { color: #fbbf24; text-shadow: 0 0 4px rgba(251, 191, 36, 0.3); }
+        #alphabet-layout .keyboard-row:nth-child(4) .key:not(.special) { color: #f472b6; text-shadow: 0 0 4px rgba(244, 114, 182, 0.3); }
+
+        #symbols-view .keyboard-row:nth-child(1) .key:not(.special) { color: #38bdf8; text-shadow: 0 0 4px rgba(56, 189, 248, 0.3); }
+        #symbols-view .keyboard-row:nth-child(2) .key:not(.special) { color: #4ade80; text-shadow: 0 0 4px rgba(74, 222, 128, 0.3); }
+        #symbols-view .keyboard-row:nth-child(3) .key:not(.special) { color: #fbbf24; text-shadow: 0 0 4px rgba(251, 191, 36, 0.3); }
+        #symbols-view .keyboard-row:nth-child(4) .key:not(.special) { color: #f472b6; text-shadow: 0 0 4px rgba(244, 114, 182, 0.3); }
+        #number-pad-view .key:not(.special) { color: #38bdf8; text-shadow: 0 0 4px rgba(56, 189, 248, 0.3); }
+
+        .key.special { background-color: #231c33; color: #f472b6; font-size: 15px; flex: 1.5; border: 1px solid rgba(244, 114, 182, 0.35); text-shadow: 0 0 4px rgba(244, 114, 182, 0.3); }
+        .key.enter-special { background-color: #2b1c3a; color: #38bdf8; font-size: 22px; font-weight: 800; flex: 2.2; border: 1.5px solid rgba(56, 189, 248, 0.6); text-shadow: 0 0 6px rgba(56, 189, 248, 0.5); }
+        .key.spacebar { flex: 4; background-color: #1f1b36; color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.35); font-size: 15px; text-shadow: 0 0 5px rgba(192, 132, 252, 0.35); }
+        .key.punct { background-color: #1b2234; color: #38bdf8; border: 1.5px solid rgba(56, 189, 248, 0.55); box-shadow: 0 0 7px rgba(56, 189, 248, 0.28); text-shadow: 0 0 4px rgba(56, 189, 248, 0.3); font-size: 18px; flex: 0.8; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-screen" id="mobile-screen">
+        <div class="store-header">
+            <span style="--i:1">B</span><span style="--i:2">H</span><span style="--i:3">A</span><span style="--i:4">J</span><span style="--i:5">O</span>&nbsp;<span style="--i:6">S</span><span style="--i:7">T</span><span style="--i:8">O</span><span style="--i:9">R</span><span style="--i:10">E</span>
+        </div>
+
+        <div class="store-table" id="store-table-container">
+            <div class="table-header-row">
+                <div class="th-no">No.</div>
+                <div class="th-item">Items Name</div>
+                <div class="th-calc">Calculation</div>
+                <div class="th-amount">Amount</div>
+                <div class="th-action"></div>
+            </div>
+
+            <div class="table-body" id="items-table-body"></div>
+
+            <div class="add-item-container">
+                <button class="save-items-name-btn" id="save-items-name-btn">Save Items Name</button>
+                <span class="disclaimer-text" id="disclaimer-msg">⚠️ ପ୍ରଥମେ ଖାଲି ଜାଗା ପୂରଣ କରନ୍ତୁ!</span>
+                <button class="add-btn" id="add-row-btn">+ Add Items</button>
+            </div>
+        </div>
+
+        <div class="store-footer-container" id="store-footer">
+            <div class="footer-left-side">
+                <div class="footer-btn-left">Total Amount</div>
+                <div class="footer-display-center" id="grand-total">0.00</div>
+            </div>
+            <div class="footer-right-side">
+                <button class="save-btn-store" id="save-store-btn">SAVE</button>
+                <div class="footer-bottom-btns">
+                    <button class="footer-btn-undo" id="undo-btn">Undo</button>
+                    <button class="footer-btn-right" id="refresh-btn">Refresh</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PDF Name Popup for Save button -->
+        <div id="pdfNamePopup" class="professional-popup-overlay">
+            <div class="professional-popup-box">
+                <div class="popup-icon-container">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <h3>Enter PDF Name</h3>
+                <p>Please enter a name for the PDF file to save in your storage.</p>
+                <input type="text" id="pdfNameInput" class="password-popup-input" placeholder="Enter file name..." readonly value="BhajoStore_Bill">
+                <div class="popup-btn-group">
+                    <button class="popup-btn popup-btn-secondary" onclick="closePdfNamePopup()">Cancel</button>
+                    <button class="popup-btn popup-btn-primary" onclick="generateAndSavePDF()">Save PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="passwordPopup" class="professional-popup-overlay">
+            <div class="professional-popup-box">
+                <div class="popup-icon-container">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 id="pwdPopupTitle">Enter Password</h3>
+                <p id="pwdPopupDesc">Please enter password to access Manage Items.</p>
+                
+                <input type="password" id="popupPasswordInput" class="password-popup-input" placeholder="Enter password..." readonly>
+                
+                <div class="popup-btn-group" id="pwdPopupBtnGroup">
+                    <button class="popup-btn popup-btn-secondary" onclick="closePasswordPopup()">Cancel</button>
+                    <button class="popup-btn popup-btn-primary" onclick="verifyPasswordAction()">Submit</button>
+                </div>
+
+                <button class="change-pwd-link" id="changePasswordLink" onclick="openChangePasswordMode()">Change Password</button>
+            </div>
+        </div>
+
+        <div id="professionalPopup" class="professional-popup-overlay">
+            <div class="professional-popup-box">
+                <div class="popup-icon-container">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h3 id="popupTitle">Success</h3>
+                <p id="popupMessage">Data saved successfully!</p>
+                <div class="popup-btn-group">
+                    <button class="popup-btn popup-btn-primary" onclick="closeProfessionalPopup()">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="item-manager-modal hidden" id="item-manager-modal">
+            <div class="item-manager-card">
+                <div class="manager-header-row">
+                    <h2>Manage Items</h2>
+                    <button class="close-manager-btn" id="close-manager-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="manager-form-row">
+                    <div class="manager-input-group">
+                        <label>Item Name</label>
+                        <input type="text" id="itemSearch" placeholder="Click to type..." readonly>
+                        <div id="suggestionsBox" class="suggestions-dropdown"></div>
+                    </div>
+                    <button class="manager-add-btn" id="manager-add-btn"><i class="fa-solid fa-plus"></i> Add</button>
+                </div>
+
+                <div class="manager-table-responsive" id="tableContainer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">No.</th>
+                                <th style="width: 65%;">Items Name</th>
+                                <th style="width: 20%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="managerTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="keyboard-wrapper minimized" id="keyboard-wrapper">
+            <div class="keyboard-toggle-icon" id="hide-show-icon">▲</div>
+            
+            <div class="keyboard" id="alphabet-keyboard">
+                <div id="alphabet-layout">
+                    <div class="keyboard-row">
+                        <button class="key">q</button><button class="key">w</button><button class="key">e</button><button class="key">r</button><button class="key">t</button><button class="key">y</button><button class="key">u</button><button class="key">i</button><button class="key">o</button><button class="key">p</button>
+                    </div>
+                    <div class="keyboard-row">
+                        <button class="key">a</button><button class="key">s</button><button class="key">d</button><button class="key">f</button><button class="key">g</button><button class="key">h</button><button class="key">j</button><button class="key">k</button><button class="key">l</button>
+                    </div>
+                    <div class="keyboard-row">
+                        <button class="key special" id="shift-btn">⇧</button>
+                        <button class="key">z</button><button class="key">x</button><button class="key">c</button><button class="key">v</button><button class="key">b</button><button class="key">n</button><button class="key">m</button>
+                        <button class="key special" id="backspace-btn">⌫</button>
+                    </div>
+                </div>
+
+                <div id="symbol-layout" class="hidden">
+                    <div id="symbols-view">
+                        <div class="keyboard-row">
+                            <button class="key">~</button><button class="key">`</button><button class="key">|</button><button class="key">•</button><button class="key">√</button><button class="key">π</button><button class="key">÷</button><button class="key">×</button><button class="key">¶</button><button class="key">∆</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key">@</button><button class="key">#</button><button class="key">$</button><button class="key">%</button><button class="key">&</button><button class="key">-</button><button class="key">_</button><button class="key">+</button><button class="key">=</button><button class="key">(</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key">)</button><button class="key">!</button><button class="key">?</button><button class="key">:</button><button class="key">;</button><button class="key">"</button><button class="key">'</button><button class="key">/</button><button class="key">\</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key special" id="num-pad-toggle">123</button>
+                            <button class="key">&lt;</button><button class="key">&gt;</button><button class="key">[</button><button class="key">]</button><button class="key">{</button><button class="key">}</button>
+                            <button class="key special backspace-btn-sym">⌫</button>
+                        </div>
+                    </div>
+
+                    <div id="number-pad-view" class="hidden">
+                        <div class="keyboard-row"><button class="key">7</button><button class="key">8</button><button class="key">9</button></div>
+                        <div class="keyboard-row"><button class="key">4</button><button class="key">5</button><button class="key">6</button></div>
+                        <div class="keyboard-row"><button class="key">1</button><button class="key">2</button><button class="key">3</button></div>
+                        <div class="keyboard-row">
+                            <button class="key special" id="back-to-symbols">#+=</button>
+                            <button class="key">0</button>
+                            <button class="key special backspace-btn-sym">⌫</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="keyboard-row" style="margin-top: 5px;">
+                    <button class="key special" id="toggle-sym-btn">?123</button>
+                    <button class="key punct" data-char=",">,</button>
+                    <button class="key spacebar" data-char=" ">space</button>
+                    <button class="key punct" data-char=".">.</button>
+                    <button class="key enter-special" id="enter-alphabet-btn">↵</button>
+                </div>
+            </div>
+
+            <div class="keyboard hidden" id="calculator-keyboard">
+                <div class="calc-screen">
+                    <div class="calc-history" id="calc-history"></div>
+                    <div class="calc-output" id="calc-output">0</div>
+                    <div class="calc-live-preview" id="calc-live-preview"></div>
+                </div>
+
+                <div class="calc-grid">
+                    <button class="key calc-key special" data-action="clear">AC</button>
+                    <button class="key calc-key special" data-action="del">⌫</button>
+                    <button class="key calc-key operator" data-value="%">%</button>
+                    <button class="key calc-key operator" data-value="/">÷</button>
+
+                    <button class="key calc-key" data-value="7">7</button>
+                    <button class="key calc-key" data-value="8">8</button>
+                    <button class="key calc-key" data-value="9">9</button>
+                    <button class="key calc-key operator" data-value="*">×</button>
+
+                    <button class="key calc-key" data-value="4">4</button>
+                    <button class="key calc-key" data-value="5">5</button>
+                    <button class="key calc-key" data-value="6">6</button>
+                    <button class="key calc-key operator" data-value="-">-</button>
+
+                    <button class="key calc-key" data-value="1">1</button>
+                    <button class="key calc-key" data-value="2">2</button>
+                    <button class="key calc-key" data-value="3">3</button>
+                    <button class="key calc-key operator" data-value="+">+</button>
+
+                    <button class="key calc-key" data-value="00">00</button>
+                    <button class="key calc-key" data-value="0">0</button>
+                    <button class="key calc-key" data-value="." >.</button>
+                    <button class="key calc-key equals" data-action="calculate">=</button>
+
+                    <button class="key save-btn" id="save-btn">💾 Save Result</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BHAIJO_STORE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw9DUUScnCppZCkKqatJ4HG0XZDhXIJK7NdIP5pbgtePHZfilhJJ25D0AjmmjuwdvMWpQ/exec";
+
+        let cachedSheetItems = [];
+
+        function showProfessionalPopup(title, message) {
+            document.getElementById('popupTitle').innerText = title;
+            document.getElementById('popupMessage').innerText = message;
+            document.getElementById('professionalPopup').classList.add('active');
+        }
+
+        function closeProfessionalPopup() {
+            document.getElementById('professionalPopup').classList.remove('active');
+        }
+
+        // PDF Name Popup handlers
+        const pdfNameInput = document.getElementById('pdfNameInput');
+        if (pdfNameInput) {
+            pdfNameInput.addEventListener('click', (e) => {
+                e.stopPropagation();
+                activeInput = pdfNameInput;
+                activeInputType = 'pdfName';
+                alphabetKeyboard.classList.remove('hidden');
+                calculatorKeyboard.classList.add('hidden');
+                showKeyboard();
+            });
+        }
+
+        function openPdfNamePopup() {
+            if (initialRows.length === 0 || (initialRows.length === 1 && (!initialRows[0].name.trim() || !initialRows[0].amount.trim() || initialRows[0].amount === '0000'))) {
+                showProfessionalPopup('Warning', 'Please add at least one valid item and amount!');
+                renderRows();
+                return;
+            }
+            document.getElementById('pdfNameInput').value = "BhajoStore_Bill_" + new Date().toISOString().slice(0,10);
+            document.getElementById('pdfNamePopup').classList.add('active');
+        }
+
+        function closePdfNamePopup() {
+            document.getElementById('pdfNamePopup').classList.remove('active');
+            hideKeyboard();
+        }
+
+        function generateAndSavePDF() {
+            const fileName = (document.getElementById('pdfNameInput').value.trim() || "BhajoStore_Bill") + ".pdf";
+            closePdfNamePopup();
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Page Background (#073B4C)
+                doc.setFillColor(7, 59, 76);
+                doc.rect(0, 0, 210, 297, "F");
+
+                // Header Background
+                doc.setFillColor(11, 15, 25);
+                doc.rect(0, 0, 210, 40, "F");
+
+                // Title
+                doc.setTextColor(56, 189, 248);
+                doc.setFontSize(22);
+                doc.setFont("helvetica", "bold");
+                doc.text("BHAJO STORE", 105, 22, { align: "center" });
+
+                // Subtitle / Date
+                doc.setTextColor(156, 163, 175);
+                doc.setFontSize(10);
+                doc.text("Date: " + new Date().toLocaleString(), 105, 32, { align: "center" });
+
+                // Table Header
+                let startY = 55;
+                doc.setFillColor(31, 41, 55);
+                doc.rect(14, startY, 182, 10, "F");
+
+                doc.setTextColor(56, 189, 248);
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "bold");
+                doc.text("No.", 20, startY + 7);
+                doc.text("Items Name", 40, startY + 7);
+                doc.text("Calculation", 110, startY + 7);
+                doc.text("Amount", 185, startY + 7, { align: "right" });
+
+                // Table Rows
+                startY += 10;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(241, 243, 244);
+
+                let total = 0;
+                let validIdx = 0; // Fix: use a separate counter for valid rows so row number 1 is not skipped or filtered out incorrectly
+                initialRows.forEach((row, idx) => {
+                    if (!row.name.trim() && !row.amount.trim()) return;
+                    let amt = parseFloat(row.amount) || 0;
+                    total += amt;
+                    validIdx++;
+
+                    if (startY > 270) {
+                        doc.addPage();
+                        doc.setFillColor(7, 59, 76);
+                        doc.rect(0, 0, 210, 297, "F");
+                        startY = 20;
+                    }
+
+                    // Zebra striping
+                    if (validIdx % 2 === 0) {
+                        doc.setFillColor(18, 24, 36);
+                        doc.rect(14, startY, 182, 8, "F");
+                    }
+
+                    doc.text(validIdx.toString(), 20, startY + 6);
+                    doc.text(row.name || "", 40, startY + 6);
+                    doc.text(row.calc || "", 110, startY + 6);
+                    doc.text(amt.toFixed(2), 185, startY + 6, { align: "right" });
+
+                    startY += 8;
+                });
+
+                // Grand Total
+                startY += 6;
+                doc.setFillColor(31, 41, 55);
+                doc.rect(14, startY, 182, 12, "F");
+                doc.setTextColor(0, 230, 118);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(12);
+                doc.text("Grand Total:", 20, startY + 8);
+                doc.text(total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 185, startY + 8, { align: "right" });
+
+                // In the APK, AndroidPdf writes the file directly to Downloads/Bhajo Store.
+                // The Blob fallback keeps the same HTML working in ordinary browsers.
+                savePdfFile(doc, fileName);
+                showProfessionalPopup("Success", "PDF saved successfully to your storage!");
+            } catch (err) {
+                console.error("PDF generation error:", err);
+                showProfessionalPopup("Error", "Failed to generate PDF!");
+            }
+        }
+
+        function savePdfFile(doc, fileName) {
+            if (window.AndroidPdf && typeof window.AndroidPdf.savePdf === "function") {
+                const dataUri = doc.output("datauristring");
+                const base64Pdf = dataUri.substring(dataUri.indexOf(",") + 1);
+                const result = window.AndroidPdf.savePdf(base64Pdf, fileName);
+
+                if (result !== "OK") {
+                    throw new Error(result || "Unable to save PDF");
+                }
+                return;
+            }
+
+            const pdfBlob = doc.output("blob");
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            const link = document.createElement("a");
+            link.href = pdfUrl;
+            link.download = fileName;
+            link.style.display = "none";
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+                link.remove();
+                URL.revokeObjectURL(pdfUrl);
+            }, 60000);
+        }
+
+        let passwordPopupMode = "verify";
+        let tempOldPasswordForChange = "";
+
+        function openPasswordPopup() {
+            passwordPopupMode = "verify";
+            document.getElementById('pwdPopupTitle').innerText = "Enter Password";
+            document.getElementById('pwdPopupDesc').innerText = "Please enter password to access Manage Items.";
+            document.getElementById('popupPasswordInput').value = "";
+            document.getElementById('popupPasswordInput').placeholder = "Enter password...";
+            document.getElementById('changePasswordLink').style.display = "block";
+            document.getElementById('passwordPopup').classList.add('active');
+        }
+
+        function closePasswordPopup() {
+            document.getElementById('passwordPopup').classList.remove('active');
+            hideKeyboard();
+        }
+
+        function openChangePasswordMode() {
+            passwordPopupMode = "old_verify";
+            document.getElementById('pwdPopupTitle').innerText = "Change Password";
+            document.getElementById('pwdPopupDesc').innerText = "Enter your Old Password.";
+            document.getElementById('popupPasswordInput').value = "";
+            document.getElementById('popupPasswordInput').placeholder = "Old password...";
+            document.getElementById('changePasswordLink').style.display = "none";
+        }
+
+        function verifyPasswordAction() {
+            const val = document.getElementById('popupPasswordInput').value.trim();
+            if(!val) {
+                showProfessionalPopup("Warning", "Password cannot be empty!");
+                return;
+            }
+
+            if(passwordPopupMode === "verify") {
+                fetch(BHAIJO_STORE_WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "VERIFY_PASSWORD", enteredPassword: val })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === "success") {
+                        closePasswordPopup();
+                        openItemManagerModal();
+                    } else {
+                        showProfessionalPopup("Error", "Incorrect Password!");
+                    }
+                })
+                .catch(err => {
+                    console.error("Password verification error:", err);
+                    showProfessionalPopup("Error", "Network error connecting to Sheet!");
+                });
+
+            } else if(passwordPopupMode === "old_verify") {
+                tempOldPasswordForChange = val;
+                passwordPopupMode = "new_add";
+                document.getElementById('pwdPopupTitle').innerText = "New Password";
+                document.getElementById('pwdPopupDesc').innerText = "Enter your New Password.";
+                document.getElementById('popupPasswordInput').value = "";
+                document.getElementById('popupPasswordInput').placeholder = "New password...";
+
+            } else if(passwordPopupMode === "new_add") {
+                fetch(BHAIJO_STORE_WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "CHANGE_PASSWORD", oldPassword: tempOldPasswordForChange, newPassword: val })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === "success") {
+                        closePasswordPopup();
+                        showProfessionalPopup("Success", "Password updated successfully in Google Sheet!");
+                    } else {
+                        showProfessionalPopup("Error", data.message || "Purana password galat hai!");
+                    }
+                })
+                .catch(err => {
+                    console.error("Change password error:", err);
+                    showProfessionalPopup("Error", "Network error connecting to Sheet!");
+                });
+            }
+        }
+
+        const popupPasswordInput = document.getElementById('popupPasswordInput');
+        if (popupPasswordInput) {
+            popupPasswordInput.addEventListener('click', (e) => {
+                e.stopPropagation();
+                activeInput = popupPasswordInput;
+                activeInputType = 'password';
+                alphabetKeyboard.classList.remove('hidden');
+                calculatorKeyboard.classList.add('hidden');
+                showKeyboard();
+            });
+        }
+
+        function syncItemToGoogleSheet(itemName, actionType = "ADD") {
+            if (!itemName || itemName.trim() === "") return;
+            fetch(BHAIJO_STORE_WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ itemName: itemName.trim(), action: actionType })
+            }).catch(error => console.error("Sheet sync error:", error));
+        }
+
+        function preloadItemsFromGoogleSheet() {
+            fetch(BHAIJO_STORE_WEB_APP_URL)
+                .then(response => response.json())
+                .then(data => { if (data && Array.isArray(data)) cachedSheetItems = data; })
+                .catch(error => console.error("Background preload error:", error));
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { preloadItemsFromGoogleSheet(); });
+
+        const tableBody = document.getElementById('items-table-body');
+        const addRowBtn = document.getElementById('add-row-btn');
+        const saveItemsNameBtn = document.getElementById('save-items-name-btn');
+        const disclaimerMsg = document.getElementById('disclaimer-msg');
+        const grandTotalDisplay = document.getElementById('grand-total');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const undoBtn = document.getElementById('undo-btn');
+        const saveStoreBtn = document.getElementById('save-store-btn');
+        const storeFooter = document.getElementById('store-footer');
+        const keyboardWrapper = document.getElementById('keyboard-wrapper');
+        const hideShowIcon = document.getElementById('hide-show-icon');
+        const storeTableContainer = document.getElementById('store-table-container');
+
+        const alphabetKeyboard = document.getElementById('alphabet-keyboard');
+        const calculatorKeyboard = document.getElementById('calculator-keyboard');
+        
+        let initialRows = [];
+        let backupRows = [];
+        let activeInput = null;
+        let activeInputType = 'name';
+
+        function renderRows() {
+            tableBody.innerHTML = '';
+            initialRows.forEach((row, index) => {
+                const isNameEmpty = !row.name.trim();
+                const isAmountEmpty = !row.amount.trim() || row.amount === '0000' || row.amount === '0';
+
+                const tr = document.createElement('div');
+                tr.className = 'item-row';
+                tr.innerHTML = `
+                    <div class="td-no">${index + 1}</div>
+                    <div class="td-item">
+                        <input type="text" class="custom-keyboard-input item-name-input ${isNameEmpty ? 'empty-text-glow' : ''}" value="${row.name}" placeholder="Item Name" data-index="${index}" data-field="name" readonly>
+                        <div class="suggestions-list-main" id="suggestions-list-${index}"></div>
+                    </div>
+                    <div class="td-calc">
+                        <input type="text" class="calc-expression-input" value="${row.calc || ''}" placeholder="" data-index="${index}" readonly>
+                    </div>
+                    <div class="td-amount">
+                        <input type="text" class="custom-keyboard-input amount-input ${isAmountEmpty ? 'empty-text-glow' : ''}" value="${row.amount}" placeholder="0000" data-index="${index}" data-field="amount" readonly>
+                    </div>
+                    <div class="td-action">
+                        <button class="delete-btn" onclick="deleteRow(${index})">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            attachInputListeners();
+            calculateTotal();
+            checkFieldsForDisclaimer();
+        }
+
+        function checkFieldsForDisclaimer() {
+            if (initialRows.length > 0) {
+                const lastRow = initialRows[initialRows.length - 1];
+                if (!lastRow.name.trim() || !lastRow.amount.trim() || lastRow.amount === '0000' || lastRow.amount === '0') {
+                    disclaimerMsg.classList.add('show');
+                } else {
+                    disclaimerMsg.classList.remove('show');
+                }
+            } else {
+                disclaimerMsg.classList.remove('show');
+            }
+        }
+
+        function filterGridItems(index) {
+            const inputField = document.querySelector(`.item-name-input[data-index="${index}"]`);
+            const suggestionBox = document.getElementById(`suggestions-list-${index}`);
+            if (!suggestionBox || !inputField) return;
+
+            suggestionBox.innerHTML = '';
+            const query = inputField.value.trim();
+
+            if (!query) {
+                suggestionBox.style.display = 'none';
+                return;
+            }
+
+            const filtered = cachedSheetItems.filter(item => 
+                item.toLowerCase().includes(query.toLowerCase())
+            );
+
+            if (filtered.length > 0) {
+                suggestionBox.style.display = 'block';
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-div-main';
+                    div.textContent = item;
+                    
+                    div.onclick = function(e) {
+                        e.stopPropagation();
+                        initialRows[index].name = item;
+                        inputField.value = item;
+                        suggestionBox.style.display = 'none';
+                        checkFieldsForDisclaimer();
+                        calculateTotal();
+                    };
+                    
+                    suggestionBox.appendChild(div);
+                });
+            } else {
+                suggestionBox.style.display = 'none';
+            }
+        }
+
+        function attachInputListeners() {
+            document.querySelectorAll('.item-name-input').forEach(input => {
+                input.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    activeInput = input;
+                    activeInputType = 'name';
+                    alphabetKeyboard.classList.remove('hidden');
+                    calculatorKeyboard.classList.add('hidden');
+                    showKeyboard();
+                });
+            });
+
+            document.querySelectorAll('.amount-input, .calc-expression-input').forEach(input => {
+                input.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const index = input.getAttribute('data-index');
+                    const amountInput = document.querySelector(`.amount-input[data-index="${index}"]`);
+                    activeInput = amountInput;
+                    activeInputType = 'amount';
+                    calculatorKeyboard.classList.remove('hidden');
+                    alphabetKeyboard.classList.add('hidden');
+                    currentInput = (initialRows[index].calc !== '' && initialRows[index].calc !== '0') ? initialRows[index].calc : '0';
+                    historyString = '';
+                    updateCalcDisplay();
+                    showKeyboard();
+                });
+            });
+        }
+
+        function adjustFooterPosition() {
+            if (keyboardWrapper.classList.contains('active')) {
+                const activeKb = !alphabetKeyboard.classList.contains('hidden') ? alphabetKeyboard : calculatorKeyboard;
+                const kbHeight = activeKb.offsetHeight + keyboardWrapper.querySelector('.keyboard-toggle-icon').offsetHeight;
+                storeFooter.style.position = 'absolute';
+                storeFooter.style.bottom = kbHeight + 'px';
+                storeFooter.style.zIndex = '1001';
+                storeTableContainer.style.maxHeight = `calc(100dvh - 70px - ${kbHeight}px - ${storeFooter.offsetHeight}px)`;
+            }
+        }
+
+        function showKeyboard() {
+            keyboardWrapper.classList.remove('minimized');
+            keyboardWrapper.classList.add('active');
+            hideShowIcon.innerText = '▼';
+            setTimeout(adjustFooterPosition, 10);
+        }
+
+        function hideKeyboard() {
+            keyboardWrapper.classList.add('minimized');
+            keyboardWrapper.classList.remove('active');
+            hideShowIcon.innerText = '▲';
+            storeFooter.style.position = 'relative';
+            storeFooter.style.bottom = 'auto';
+            storeTableContainer.style.maxHeight = 'none';
+            document.querySelectorAll('.suggestions-list-main').forEach(box => box.style.display = 'none');
+        }
+
+        hideShowIcon.addEventListener('click', () => {
+            if (keyboardWrapper.classList.contains('minimized')) {
+                const targetInput = activeInput || document.querySelector('.item-name-input');
+                if(targetInput) activeInput = targetInput;
+                showKeyboard();
+            } else {
+                hideKeyboard();
+            }
+        });
+
+        window.deleteRow = function(index) {
+            initialRows.splice(index, 1);
+            renderRows();
+        }
+
+        addRowBtn.addEventListener('click', () => {
+            if (initialRows.length > 0) {
+                const lastRow = initialRows[initialRows.length - 1];
+                if (!lastRow.name.trim() || !lastRow.amount.trim() || lastRow.amount === '0000' || lastRow.amount === '0') {
+                    disclaimerMsg.classList.add('show');
+                    renderRows();
+                    return;
+                }
+            }
+
+            backupRows = [];
+            initialRows.push({ name: '', calc: '', amount: '' });
+            renderRows();
+            tableBody.scrollTop = tableBody.scrollHeight;
+            
+            const newInputs = document.querySelectorAll('.item-name-input');
+            if (newInputs.length > 0) {
+                activeInput = newInputs[newInputs.length - 1];
+                activeInputType = 'name';
+                alphabetKeyboard.classList.remove('hidden');
+                calculatorKeyboard.classList.add('hidden');
+                showKeyboard();
+            }
+        });
+
+        refreshBtn.addEventListener('click', () => {
+            if (initialRows.length > 0 && !(initialRows.length === 1 && !initialRows[0].name.trim())) {
+                backupRows = JSON.parse(JSON.stringify(initialRows));
+            }
+            initialRows.length = 0;
+            renderRows();
+            hideKeyboard();
+        });
+
+        undoBtn.addEventListener('click', () => {
+            if (backupRows.length > 0) {
+                initialRows = JSON.parse(JSON.stringify(backupRows));
+                renderRows();
+                backupRows = [];
+            } else {
+                showProfessionalPopup('Notice', 'Undo karne ke liye koi data nahi hai!');
+            }
+        });
+
+        function calculateTotal() {
+            let sum = 0;
+            initialRows.forEach(row => {
+                let val = parseFloat(row.amount);
+                if (!isNaN(val)) sum += val;
+            });
+            grandTotalDisplay.innerText = sum.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        }
+
+        // SAVE button click now triggers PDF name input popup using virtual keyboard
+        saveStoreBtn.addEventListener('click', () => {
+            openPdfNamePopup();
+            hideKeyboard();
+        });
+
+        const outputScreen = document.getElementById('calc-output');
+        const historyScreen = document.getElementById('calc-history');
+        const livePreviewScreen = document.getElementById('calc-live-preview');
+        const calcKeys = document.querySelectorAll('#calculator-keyboard .key');
+
+        let currentInput = '0';
+        let historyString = '';
+        let resetOnNextInput = false;
+
+        function calculateLive(expr) {
+            try {
+                let cleanExpr = expr.replace(/×/g, '*').replace(/÷/g, '/');
+                cleanExpr = cleanExpr.replace(/[\+\-\*\/\%]+\s*$/, '');
+                if (cleanExpr === '') return '';
+                let res = eval(cleanExpr);
+                if (res !== undefined && !isNaN(res)) return parseFloat(res.toFixed(8)).toString();
+            } catch (e) {}
+            return '';
+        }
+
+        function updateCalcDisplay() {
+            outputScreen.innerText = currentInput;
+            historyScreen.innerText = historyString;
+            livePreviewScreen.innerText = calculateLive(currentInput);
+        }
+
+        calcKeys.forEach(key => {
+            key.addEventListener('click', () => {
+                const value = key.getAttribute('data-value');
+                const action = key.getAttribute('data-action');
+
+                if (value !== null) {
+                    if (resetOnNextInput) { currentInput = ''; resetOnNextInput = false; }
+                    if (currentInput === '0' && value !== '.') {
+                        currentInput = value;
+                    } else {
+                        if (value === '.' && currentInput.includes('.')) return;
+                        currentInput += value;
+                    }
+                    updateCalcDisplay();
+                }
+
+                if (action === 'clear') {
+                    currentInput = '0';
+                    historyString = '';
+                    resetOnNextInput = false;
+                    updateCalcDisplay();
+                }
+
+                if (action === 'del') {
+                    currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : '0';
+                    updateCalcDisplay();
+                }
+
+                if (action === 'calculate') {
+                    try {
+                        let cleanExpr = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
+                        cleanExpr = cleanExpr.replace(/[\+\-\*\/\%]+\s*$/, '');
+                        if (cleanExpr === '') throw new Error('Empty');
+
+                        let result = parseFloat(eval(cleanExpr).toFixed(8));
+                        let expressionText = currentInput.replace(/[\+\-\*\/\%]+\s*$/, '');
+                        
+                        historyString = currentInput + ' =';
+                        currentInput = result.toString();
+                        resetOnNextInput = true;
+                        outputScreen.innerText = currentInput;
+                        historyScreen.innerText = historyString;
+                        livePreviewScreen.innerText = '';
+
+                        if (activeInput && activeInputType === 'amount') {
+                            const index = parseInt(activeInput.getAttribute('data-index'));
+                            initialRows[index]['calc'] = expressionText;
+                            initialRows[index]['amount'] = currentInput;
+                            renderRows();
+                        }
+                    } catch (error) {
+                        currentInput = 'Error';
+                        updateCalcDisplay();
+                        setTimeout(() => { currentInput = '0'; updateCalcDisplay(); }, 1200);
+                    }
+                }
+            });
+        });
+
+        document.querySelectorAll('#calculator-keyboard .key.operator').forEach(opKey => {
+            opKey.addEventListener('click', () => {
+                const opValue = opKey.getAttribute('data-value');
+                if (resetOnNextInput) resetOnNextInput = false;
+                const lastChar = currentInput.slice(-1);
+                if (['+', '-', '*', '/', '%'].includes(lastChar)) {
+                    currentInput = currentInput.slice(0, -1) + opValue;
+                } else {
+                    currentInput += opValue;
+                }
+                updateCalcDisplay();
+            });
+        });
+
+        document.getElementById('save-btn').addEventListener('click', () => {
+            let cleanedInput = currentInput.replace(/[\+\-\*\/\%]+\s*$/, '');
+            let finalval = livePreviewScreen.innerText !== '' ? livePreviewScreen.innerText : '';
+            if (!finalval) {
+                try {
+                    let cleanExpr = cleanedInput.replace(/×/g, '*').replace(/÷/g, '/');
+                    if (cleanExpr !== '') {
+                        let res = eval(cleanExpr);
+                        if (res !== undefined && !isNaN(res)) finalval = parseFloat(res.toFixed(8)).toString();
+                    }
+                } catch (e) {}
+            }
+            if (!finalval) finalval = outputScreen.innerText;
+
+            if (finalval !== 'Error' && finalval !== '') {
+                if (activeInput && activeInputType === 'amount') {
+                    const index = parseInt(activeInput.getAttribute('data-index'));
+                    initialRows[index]['calc'] = cleanedInput;
+                    initialRows[index]['amount'] = finalval;
+                    renderRows(); 
+                }
+                hideKeyboard();
+            }
+        });
+
+        const shiftBtn = document.getElementById('shift-btn');
+        const letterKeys = document.querySelectorAll('#alphabet-layout .key:not(.special)');
+        let shiftState = 0; 
+        let lastClickTime = 0;
+
+        function updateKeyboardCase() {
+            letterKeys.forEach(key => {
+                let text = key.getAttribute('data-char') || key.innerText.toLowerCase();
+                if (!key.hasAttribute('data-char')) key.setAttribute('data-char', text);
+                key.innerText = shiftState > 0 ? text.toUpperCase() : text;
+            });
+            shiftBtn.style.backgroundColor = shiftState === 2 ? '#f472b6' : (shiftState === 1 ? '#32233f' : '#231c33');
+            shiftBtn.style.color = shiftState === 2 ? '#121622' : '#f472b6';
+            shiftBtn.innerText = shiftState === 2 ? '⇧⬆' : '⇧';
+        }
+
+        if(shiftBtn) {
+            shiftBtn.addEventListener('click', () => {
+                const currentTime = new Date().getTime();
+                shiftState = (currentTime - lastClickTime < 350) ? (shiftState === 2 ? 0 : 2) : (shiftState === 1 ? 0 : 1);
+                lastClickTime = currentTime;
+                updateKeyboardCase();
+            });
+        }
+
+        const backspaceBtn = document.getElementById('backspace-btn');
+        if (backspaceBtn) {
+            let holdTimer = null;
+            let repeatInterval = null;
+
+            const executeDelete = () => {
+                if (!activeInput) return;
+                if (activeInputType === 'name' && activeInput.classList.contains('item-name-input')) {
+                    const index = parseInt(activeInput.getAttribute('data-index'));
+                    const field = activeInput.getAttribute('data-field');
+                    if (initialRows[index][field].length > 0) {
+                        initialRows[index][field] = initialRows[index][field].slice(0, -1);
+                        activeInput.value = initialRows[index][field];
+                        checkFieldsForDisclaimer();
+                        calculateTotal();
+                        filterGridItems(index);
+                    }
+                } else if (activeInput.id === 'itemSearch') {
+                    activeInput.value = activeInput.value.slice(0, -1);
+                    filterItems();
+                } else if (activeInput.id === 'popupPasswordInput') {
+                    activeInput.value = activeInput.value.slice(0, -1);
+                } else if (activeInput.id === 'pdfNameInput') {
+                    activeInput.value = activeInput.value.slice(0, -1);
+                }
+            };
+
+            const startDelete = (e) => {
+                e.preventDefault();
+                executeDelete();
+                holdTimer = setTimeout(() => { repeatInterval = setInterval(executeDelete, 70); }, 300);
+            };
+
+            const stopDelete = () => { clearTimeout(holdTimer); clearInterval(repeatInterval); };
+
+            backspaceBtn.addEventListener('mousedown', startDelete);
+            backspaceBtn.addEventListener('touchstart', startDelete);
+            backspaceBtn.addEventListener('mouseup', stopDelete);
+            backspaceBtn.addEventListener('mouseleave', stopDelete);
+            backspaceBtn.addEventListener('touchend', stopDelete);
+        }
+
+        document.querySelectorAll('#alphabet-keyboard .key').forEach(key => {
+            key.addEventListener('click', () => {
+                if (key.closest('#symbol-layout')) return;
+                if (!activeInput) return;
+                const keyText = key.innerText;
+
+                if (key.id === 'backspace-btn' || keyText === '⌫') {
+                    return; 
+                } else if (key.classList.contains('spacebar')) {
+                    if (activeInputType === 'name' && activeInput.classList.contains('item-name-input')) {
+                        const index = parseInt(activeInput.getAttribute('data-index'));
+                        const field = activeInput.getAttribute('data-field');
+                        initialRows[index][field] += ' ';
+                        activeInput.value = initialRows[index][field];
+                        checkFieldsForDisclaimer();
+                        filterGridItems(index);
+                    } else if (activeInput.id === 'itemSearch') {
+                        activeInput.value += ' ';
+                        filterItems();
+                    } else if (activeInput.id === 'popupPasswordInput') {
+                        activeInput.value += ' ';
+                    } else if (activeInput.id === 'pdfNameInput') {
+                        activeInput.value += ' ';
+                    }
+                } else if (key.id === 'enter-alphabet-btn' || keyText === '↵') {
+                    if (activeInputType === 'name' && activeInput.classList.contains('item-name-input')) {
+                        const index = parseInt(activeInput.getAttribute('data-index'));
+                        const suggestionBox = document.getElementById(`suggestions-list-${index}`);
+                        if(suggestionBox) suggestionBox.style.display = 'none';
+
+                        const amountInputs = document.querySelectorAll('.amount-input');
+                        if (amountInputs[index]) {
+                            activeInput = amountInputs[index];
+                            activeInputType = 'amount';
+                            alphabetKeyboard.classList.add('hidden');
+                            calculatorKeyboard.classList.remove('hidden');
+                            currentInput = (initialRows[index].calc !== '' && initialRows[index].calc !== '0') ? initialRows[index].calc : '0';
+                            historyString = '';
+                            updateCalcDisplay();
+                            showKeyboard();
+                        }
+                    } else if (activeInput.id === 'itemSearch') {
+                        addItem();
+                    } else if (activeInput.id === 'popupPasswordInput') {
+                        verifyPasswordAction();
+                    } else if (activeInput.id === 'pdfNameInput') {
+                        generateAndSavePDF();
+                    }
+                } else if (!key.classList.contains('special') && key.id !== 'shift-btn') {
+                    if (activeInputType === 'name' && activeInput.classList.contains('item-name-input')) {
+                        const index = parseInt(activeInput.getAttribute('data-index'));
+                        const field = activeInput.getAttribute('data-field');
+                        initialRows[index][field] += keyText;
+                        activeInput.value = initialRows[index][field];
+                        checkFieldsForDisclaimer();
+                        filterGridItems(index);
+                    } else if (activeInput.id === 'itemSearch') {
+                        activeInput.value += keyText;
+                        filterItems();
+                    } else if (activeInput.id === 'popupPasswordInput') {
+                        activeInput.value += keyText;
+                    } else if (activeInput.id === 'pdfNameInput') {
+                        activeInput.value += keyText;
+                    }
+                    if (shiftState === 1) { shiftState = 0; updateKeyboardCase(); }
+                }
+            });
+        });
+
+        const itemManagerModal = document.getElementById('item-manager-modal');
+        const closeManagerBtn = document.getElementById('close-manager-btn');
+        const itemSearchInput = document.getElementById('itemSearch');
+        const managerAddBtn = document.getElementById('manager-add-btn');
+        const managerTableBody = document.getElementById('managerTableBody');
+        const suggestionsBox = document.getElementById('suggestionsBox');
+
+        saveItemsNameBtn.addEventListener('click', () => {
+            openPasswordPopup();
+            hideKeyboard();
+        });
+
+        function openItemManagerModal() {
+            itemManagerModal.classList.remove('hidden');
+            hideKeyboard();
+            if (cachedSheetItems && cachedSheetItems.length > 0) {
+                populateManagerTable(cachedSheetItems);
+            } else {
+                managerTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#38bdf8; padding:20px;">Loading items from Google Sheet...</td></tr>`;
+            }
+            fetchItemsFromGoogleSheet();
+        }
+
+        function fetchItemsFromGoogleSheet() {
+            fetch(BHAIJO_STORE_WEB_APP_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && Array.isArray(data)) {
+                        cachedSheetItems = data;
+                        if (!itemManagerModal.classList.contains('hidden')) {
+                            populateManagerTable(cachedSheetItems);
+                        }
+                    }
+                })
+                .catch(error => console.error("Error fetching items:", error));
+        }
+
+        function populateManagerTable(data) {
+            managerTableBody.innerHTML = '';
+            if (data && data.length > 0) {
+                data.forEach((itemName, index) => {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td class="manager-col-no">${index + 1}</td>
+                        <td>${itemName}</td>
+                        <td><button class="manager-delete-btn" onclick="deleteManagerRow(this)"><i class="fa-regular fa-trash-can"></i></button></td>
+                    `;
+                    managerTableBody.appendChild(newRow);
+                });
+            } else {
+                managerTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#94a3b8; padding:20px;">No items found in Sheet.</td></tr>`;
+            }
+        }
+
+        closeManagerBtn.addEventListener('click', () => {
+            itemManagerModal.classList.add('hidden');
+            closeSuggestions();
+            hideKeyboard();
+        });
+
+        itemSearchInput.addEventListener('click', (e) => {
+            e.stopPropagation();
+            activeInput = itemSearchInput;
+            activeInputType = 'manager';
+            alphabetKeyboard.classList.remove('hidden');
+            calculatorKeyboard.classList.add('hidden');
+            showKeyboard();
+        });
+
+        function scrollToItem(itemName) {
+            const rows = document.querySelectorAll('#managerTableBody tr');
+            for (let row of rows) {
+                if(row.cells.length < 2) continue;
+                const itemText = row.cells[1].textContent.trim();
+                if (itemText.toLowerCase() === itemName.toLowerCase()) {
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    row.classList.add('highlight-row');
+                    setTimeout(() => row.classList.remove('highlight-row'), 2000);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function addItem() {
+            const itemName = itemSearchInput.value.trim();
+            if (!itemName) {
+                showProfessionalPopup('Warning', 'Please enter an item name!');
+                return;
+            }
+
+            const rows = document.querySelectorAll('#managerTableBody tr');
+            let exists = false;
+            for (let row of rows) {
+                if(row.cells.length < 2) continue;
+                if (row.cells[1].textContent.trim().toLowerCase() === itemName.toLowerCase()) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (exists) {
+                scrollToItem(itemName);
+                itemSearchInput.value = '';
+                closeSuggestions();
+                return;
+            }
+
+            const rowCount = managerTableBody.querySelectorAll('tr').length + 1;
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="manager-col-no">${rowCount}</td>
+                <td>${itemName}</td>
+                <td><button class="manager-delete-btn" onclick="deleteManagerRow(this)"><i class="fa-regular fa-trash-can"></i></button></td>
+            `;
+
+            managerTableBody.appendChild(newRow);
+            syncItemToGoogleSheet(itemName, "ADD");
+            cachedSheetItems.push(itemName);
+
+            itemSearchInput.value = '';
+            closeSuggestions();
+            newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        managerAddBtn.addEventListener('click', addItem);
+
+        window.deleteManagerRow = function(button) {
+            const row = button.closest('tr');
+            const itemName = row.cells[1].textContent.trim();
+            row.remove();
+            reindexManagerTable();
+            syncItemToGoogleSheet(itemName, "DELETE");
+            cachedSheetItems = cachedSheetItems.filter(item => item.toLowerCase() !== itemName.toLowerCase());
+        }
+
+        function reindexManagerTable() {
+            const rows = document.querySelectorAll('#managerTableBody tr');
+            rows.forEach((row, index) => {
+                if(row.cells.length > 0) row.cells[0].textContent = index + 1;
+            });
+        }
+
+        function filterItems() {
+            const inputVal = itemSearchInput.value.toLowerCase().trim();
+            suggestionsBox.innerHTML = '';
+
+            if (!inputVal) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            const rows = document.querySelectorAll('#managerTableBody tr');
+            let matchedItems = [];
+
+            rows.forEach(row => {
+                if(row.cells.length < 2) return;
+                const itemText = row.cells[1].textContent.trim();
+                if (itemText.toLowerCase().includes(inputVal)) {
+                    matchedItems.push(itemText);
+                }
+            });
+
+            if (matchedItems.length > 0) {
+                suggestionsBox.style.display = 'block';
+                matchedItems.forEach(item => {
+                    const div = document.createElement('div');
+                    div.classList.add('suggestion-item');
+                    div.textContent = item;
+                    div.onclick = () => {
+                        itemSearchInput.value = item;
+                        suggestionsBox.style.display = 'none';
+                        scrollToItem(item);
+                    };
+                    suggestionsBox.appendChild(div);
+                });
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        }
+
+        function closeSuggestions() {
+            suggestionsBox.style.display = 'none';
+        }
+
+        const toggleSymBtn = document.getElementById('toggle-sym-btn');
+        const alphabetLayout = document.getElementById('alphabet-layout');
+        const symbolLayout = document.getElementById('symbol-layout');
+        const symbolsView = document.getElementById('symbols-view');
+        const numberPadView = document.getElementById('number-pad-view');
+        const numPadToggle = document.getElementById('num-pad-toggle');
+        const backToSymbols = document.getElementById('back-to-symbols');
+
+        toggleSymBtn.addEventListener('click', () => {
+            alphabetLayout.classList.toggle('hidden');
+            symbolLayout.classList.toggle('hidden');
+            symbolsView.classList.remove('hidden');
+            numberPadView.classList.add('hidden');
+            numPadToggle.innerText = '123';
+            toggleSymBtn.innerText = alphabetLayout.classList.contains('hidden') ? 'ABC' : '?123';
+        });
+
+        numPadToggle.addEventListener('click', () => {
+            symbolsView.classList.add('hidden');
+            numberPadView.classList.remove('hidden');
+        });
+
+        backToSymbols.addEventListener('click', () => {
+            numberPadView.classList.add('hidden');
+            symbolsView.classList.remove('hidden');
+        });
+
+        document.querySelectorAll('#symbol-layout .key:not(.special)').forEach(key => {
+            key.addEventListener('click', () => {
+                if (activeInput && activeInput.id === 'itemSearch') {
+                    itemSearchInput.value += key.innerText;
+                    filterItems();
+                } else if (activeInput && activeInput.classList.contains('item-name-input')) {
+                    const index = parseInt(activeInput.getAttribute('data-index'));
+                    const field = activeInput.getAttribute('data-field');
+                    initialRows[index][field] += key.innerText;
+                    activeInput.value = initialRows[index][field];
+                    checkFieldsForDisclaimer();
+                    filterGridItems(index);
+                } else if (activeInput && activeInput.id === 'popupPasswordInput') {
+                    popupPasswordInput.value += key.innerText;
+                } else if (activeInput && activeInput.id === 'pdfNameInput') {
+                    pdfNameInput.value += key.innerText;
+                }
+            });
+        });
+
+        document.querySelectorAll('.backspace-btn-sym').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (activeInput && activeInput.id === 'itemSearch') {
+                    itemSearchInput.value = itemSearchInput.value.slice(0, -1);
+                    filterItems();
+                } else if (activeInput && activeInput.classList.contains('item-name-input')) {
+                    const index = parseInt(activeInput.getAttribute('data-index'));
+                    const field = activeInput.getAttribute('data-field');
+                    if (initialRows[index][field].length > 0) {
+                        initialRows[index][field] = initialRows[index][field].slice(0, -1);
+                        activeInput.value = initialRows[index][field];
+                        checkFieldsForDisclaimer();
+                        calculateTotal();
+                        filterGridItems(index);
+                    }
+                } else if (activeInput && activeInput.id === 'popupPasswordInput') {
+                    popupPasswordInput.value = popupPasswordInput.value.slice(0, -1);
+                } else if (activeInput && activeInput.id === 'pdfNameInput') {
+                    pdfNameInput.value = pdfNameInput.value.slice(0, -1);
+                }
+            });
+        });
+
+        document.querySelectorAll('.punct, .spacebar').forEach(key => {
+            key.addEventListener('click', () => {
+                const char = key.getAttribute('data-char') || key.innerText;
+                if (activeInput && activeInput.id === 'itemSearch') {
+                    itemSearchInput.value += char;
+                } else if (activeInput && activeInput.classList.contains('item-name-input')) {
+                    const index = parseInt(activeInput.getAttribute('data-index'));
+                    const field = activeInput.getAttribute('data-field');
+                    initialRows[index][field] += char;
+                    activeInput.value = initialRows[index][field];
+                    checkFieldsForDisclaimer();
+                    filterGridItems(index);
+                } else if (activeInput && activeInput.id === 'popupPasswordInput') {
+                    popupPasswordInput.value += char;
+                } else if (activeInput && activeInput.id === 'pdfNameInput') {
+                    pdfNameInput.value += char;
+                }
+            });
+        });
+
+        initialRows.push({ name: '', calc: '', amount: '' });
+        renderRows();
+    </script>
+</body>
+</html>
