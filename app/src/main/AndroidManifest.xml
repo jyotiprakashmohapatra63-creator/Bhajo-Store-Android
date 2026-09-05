@@ -15,16 +15,32 @@ class MainActivity : AppCompatActivity() {
         val webView = findViewById<WebView>(R.id.webView)
         webView.settings.javaScriptEnabled = true
 
-        // Custom WebViewClient lagayein error handle karne ke liye
+        // Custom WebViewClient with backward compatibility for error handling
         webView.webViewClient = object : WebViewClient() {
+            // For modern Android devices (API 23 and above)
             override fun onReceivedError(
                 view: WebView?,
                 request: WebResourceRequest?,
                 error: WebResourceError?
             ) {
                 super.onReceivedError(view, request, error)
-                
-                // Professional Dark Editor Theme & Premium Glowing Shimmer Animation for Developer Name
+                if (request?.isForMainFrame == true) {
+                    loadOfflinePage(view)
+                }
+            }
+
+            // For older Android devices (API below 23)
+            override fun onReceivedError(
+                view: WebView?,
+                errorCode: Int,
+                description: String?,
+                failingUrl: String?
+            ) {
+                super.onReceivedError(view, errorCode, description, failingUrl)
+                loadOfflinePage(view)
+            }
+
+            private fun loadOfflinePage(view: WebView?) {
                 val offlineHtml = """
                     <html>
                     <head>
@@ -95,7 +111,6 @@ class MainActivity : AppCompatActivity() {
                             button:active {
                                 transform: scale(0.98);
                             }
-                            /* Premium Professional Shimmer & Pulse Animation for Developer Name */
                             .dev-name {
                                 margin-top: 25px;
                                 font-size: 13px;
