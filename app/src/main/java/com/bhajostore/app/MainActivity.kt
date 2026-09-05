@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                                 box-shadow: 0 20px 40px rgba(0,0,0,0.7); 
                                 width: 100%;
                                 max-width: 340px;
-                                animation: slideUpFade 0.6s cubic-getByzier(0.16, 1, 0.3, 1) forwards;
+                                animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
                             }
                             @keyframes slideUpFade {
                                 0% { opacity: 0; transform: translateY(25px); }
