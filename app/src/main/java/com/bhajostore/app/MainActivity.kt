@@ -25,6 +25,8 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        actionBar?.hide()
+
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && checkSelfPermission(
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
@@ -39,6 +41,11 @@ class MainActivity : Activity() {
         webView.settings.domStorageEnabled = true
         webView.settings.allowFileAccess = true
         webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
+        
+        // ସମସ୍ତ ଫୋନ୍ ସ୍କ୍ରିନ୍ ହିସାବରେ ପେଜ୍ ଫିଟ୍ ହେବା ପାଇଁ
+        webView.settings.useWideViewPort = true
+        webView.settings.loadWithOverviewMode = true
+
         webView.webChromeClient = WebChromeClient()
 
         // WebViewClient with Error Handling & Offline Popup support
