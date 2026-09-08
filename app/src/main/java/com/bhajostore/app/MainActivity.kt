@@ -2,6 +2,7 @@ package com.bhajostore.app
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
@@ -19,11 +20,15 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Calendar
 
 class MainActivity : Activity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ଫେଷ୍ଟିଭାଲ୍ ତାରିଖ ଅନୁସାରେ ଆଇକନ୍ ଅଟୋ-ଅପଡେଟ୍ ହେବା ଫଙ୍କସନ୍
+        checkAndSwitchAppIcon()
 
         actionBar?.hide()
 
@@ -161,6 +166,107 @@ class MainActivity : Activity() {
 
         webView.addJavascriptInterface(PdfStorageBridge(this), "AndroidPdf")
         webView.loadUrl("https://jyotiprakashmohapatra63-creator.github.io/Bhajo-Store")
+    }
+
+    private fun checkAndSwitchAppIcon() {
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+
+        // ଗୁଗଲ୍ କ୍ୟାଲେଣ୍ଡର ତାରିଖ ଆଧାରେ ୨୦୨୬, ୨୦୨୭ ଏବଂ ୨୦୨૮ ପାଇଁ ଫେଷ୍ଟିଭାଲ୍ ତାଲିକା (Alias, Year, Month, Day)
+        data class Festival(val alias: String, val year: Int, val month: Int, val day: Int)
+
+        val festivals = listOf(
+            // --- 2026 ---
+            Festival(".MainActivityMakarSankranti", 2026, Calendar.JANUARY, 15),
+            Festival(".MainActivityMahaShivaratri", 2026, Calendar.FEBRUARY, 15),
+            Festival(".MainActivityHoli", 2026, Calendar.MARCH, 3),
+            Festival(".MainActivityRamNavami", 2026, Calendar.MARCH, 26),
+            Festival(".MainActivityRathYatra", 2026, Calendar.JULY, 16),
+            Festival(".MainActivityRakshaBandhan", 2026, Calendar.AUGUST, 28),
+            Festival(".MainActivityKrishnaJanmashtami", 2026, Calendar.SEPTEMBER, 4),
+            Festival(".MainActivityGaneshChaturthi", 2026, Calendar.SEPTEMBER, 14),
+            Festival(".MainActivityDurgaPuja", 2026, Calendar.OCTOBER, 20),
+            Festival(".MainActivityDiwali", 2026, Calendar.NOVEMBER, 8),
+
+            // --- 2027 ---
+            Festival(".MainActivityMakarSankranti", 2027, Calendar.JANUARY, 15),
+            Festival(".MainActivityMahaShivaratri", 2027, Calendar.MARCH, 6),
+            Festival(".MainActivityHoli", 2027, Calendar.MARCH, 22),
+            Festival(".MainActivityRamNavami", 2027, Calendar.APRIL, 15),
+            Festival(".MainActivityRathYatra", 2027, Calendar.JULY, 5),
+            Festival(".MainActivityRakshaBandhan", 2027, Calendar.AUGUST, 17),
+            Festival(".MainActivityGaneshChaturthi", 2027, Calendar.SEPTEMBER, 4),
+            Festival(".MainActivityDurgaPuja", 2027, Calendar.OCTOBER, 9), // Vijaya Dashami / Main period
+            Festival(".MainActivityDiwali", 2027, Calendar.OCTOBER, 29),
+
+            // --- 2028 ---
+            Festival(".MainActivityMakarSankranti", 2028, Calendar.JANUARY, 15),
+            Festival(".MainActivityMahaShivaratri", 2028, Calendar.FEBRUARY, 23),
+            Festival(".MainActivityHoli", 2028, Calendar.MARCH, 11),
+            Festival(".MainActivityRamNavami", 2028, Calendar.APRIL, 3),
+            Festival(".MainActivityRathYatra", 2028, Calendar.JUNE, 24),
+            Festival(".MainActivityRakshaBandhan", 2028, Calendar.AUGUST, 5),
+            Festival(".MainActivityGaneshChaturthi", 2028, Calendar.AUGUST, 23),
+            Festival(".MainActivityDurgaPuja", 2028, Calendar.SEPTEMBER, 27), // Vijaya Dashami
+            Festival(".MainActivityDiwali", 2028, Calendar.OCTOBER, 17)
+        ]
+
+        var activeAlias: String? = null
+
+        for (fest in festivals) {
+            // କେବଳ ଚଳିତ ବର୍ଷର ଫେଷ୍ଟିଭାଲ୍ ଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିବ
+            if (fest.year == currentYear) {
+                val startDate = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, fest.year)
+                    set(Calendar.MONTH, fest.month)
+                    set(Calendar.DAY_OF_MONTH, fest.day)
+                    add(Calendar.DAY_OF_MONTH, -10) // ୧୦ ଦିନ ପୂର୍ବରୁ
+                }
+
+                val endDate = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, fest.year)
+                    set(Calendar.MONTH, fest.month)
+                    set(Calendar.DAY_OF_MONTH, fest.day)
+                    add(Calendar.DAY_OF_MONTH, 2) // ପର୍ବ ସରିବାର ୨ ଦିନ ପରେ
+                }
+
+                if (calendar.after(startDate) && calendar.before(endDate)) {
+                    activeAlias = fest.alias
+                    break
+                }
+            }
+        }
+
+        // ଆଇକନ୍ ସୁଇଚ୍ କରିବା ଲଜିକ୍
+        val pm = packageManager
+        val packageName = packageName
+
+        val allAliases = listOf(
+            ".MainActivityDefault",
+            ".MainActivityMakarSankranti",
+            ".MainActivityMahaShivaratri",
+            ".MainActivityHoli",
+            ".MainActivityRamNavami",
+            ".MainActivityRathYatra",
+            ".MainActivityRakshaBandhan",
+            ".MainActivityKrishnaJanmashtami",
+            ".MainActivityGaneshChaturthi",
+            ".MainActivityDurgaPuja",
+            ".MainActivityLaxmiPuja",
+            ".MainActivityDiwali"
+        )
+
+        val targetAlias = activeAlias ?: ".MainActivityDefault"
+
+        for (alias in allAliases) {
+            val componentName = ComponentName(packageName, "$packageName$alias")
+            val newState = if (alias == targetAlias) {
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            } else {
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+            }
+            pm.setComponentEnabledSetting(componentName, newState, PackageManager.DONT_KILL_APP)
+        }
     }
 }
 
