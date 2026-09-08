@@ -1,7 +1,7 @@
 package com.bhajostore.app
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
@@ -17,19 +17,15 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.io.FileOutputStream
-import java.util.Calendar
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        checkAndSwitchFestivalIcon()
-
-        supportActionBar?.hide()
+        actionBar?.hide()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && checkSelfPermission(
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -46,11 +42,13 @@ class MainActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         
+        // ସମସ୍ତ ଫୋନ୍ ସ୍କ୍ରିନ୍ ହିସାବରେ ପେଜ୍ ଫିଟ୍ ହେବା ପାଇଁ
         webView.settings.useWideViewPort = true
         webView.settings.loadWithOverviewMode = true
 
         webView.webChromeClient = WebChromeClient()
 
+        // WebViewClient with Error Handling & Offline Popup support
         webView.webViewClient = object : WebViewClient() {
             override fun onReceivedError(
                 view: WebView,
@@ -80,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <style>
                             body { 
-                                font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
                                 text-align: center; 
                                 background-color: #0b0f19; 
                                 margin: 0;
@@ -156,91 +154,13 @@ class MainActivity : AppCompatActivity() {
                     </body>
                     </html>
                 """.trimIndent()
-
+                
                 view.loadDataWithBaseURL(null, offlineHtml, "text/html", "UTF-8", null)
             }
         }
 
         webView.addJavascriptInterface(PdfStorageBridge(this), "AndroidPdf")
         webView.loadUrl("https://jyotiprakashmohapatra63-creator.github.io/Bhajo-Store")
-    }
-
-    private fun checkAndSwitchFestivalIcon() {
-        val today = Calendar.getInstance()
-        val currentMonth = today.get(Calendar.MONTH) + 1
-        val currentDay = today.get(Calendar.DAY_OF_MONTH)
-
-        var targetAlias = "$packageName.MainActivityDefault"
-
-        if (isWithinRange(currentMonth, currentDay, 12, 30, 1, 14)) {
-            targetAlias = "$packageName.MainActivityMakarSankranti"
-        } else if (isWithinRange(currentMonth, currentDay, 2, 11, 2, 26)) {
-            targetAlias = "$packageName.MainActivityMahaShivaratri"
-        } else if (isWithinRange(currentMonth, currentDay, 2, 27, 3, 14)) {
-            targetAlias = "$packageName.MainActivityHoli"
-        } else if (isWithinRange(currentMonth, currentDay, 3, 22, 4, 6)) {
-            targetAlias = "$packageName.MainActivityRamNavami"
-        } else if (isWithinRange(currentMonth, currentDay, 6, 12, 6, 27)) {
-            targetAlias = "$packageName.MainActivityRathYatra"
-        } else if (isWithinRange(currentMonth, currentDay, 7, 25, 8, 9)) {
-            targetAlias = "$packageName.MainActivityRakshaBandhan"
-        } else if (isWithinRange(currentMonth, currentDay, 8, 1, 8, 16)) {
-            targetAlias = "$packageName.MainActivityKrishnaJanmashtami"
-        } else if (isWithinRange(currentMonth, currentDay, 8, 12, 8, 27)) {
-            targetAlias = "$packageName.MainActivityGaneshChaturthi"
-        } else if (isWithinRange(currentMonth, currentDay, 9, 17, 10, 2)) {
-            targetAlias = "$packageName.MainActivityDurgaPuja"
-        } else if (isWithinRange(currentMonth, currentDay, 9, 30, 10, 15)) {
-            targetAlias = "$packageName.MainActivityLaxmiPuja"
-        } else if (isWithinRange(currentMonth, currentDay, 10, 5, 10, 20)) {
-            targetAlias = "$packageName.MainActivityDiwali"
-        }
-
-        updateAppIcon(targetAlias)
-    }
-
-    private fun isWithinRange(cMonth: Int, cDay: Int, startMonth: Int, startDay: Int, endMonth: Int, endDay: Int): Boolean {
-        val currentDateVal = cMonth * 100 + cDay
-        val startDateVal = startMonth * 100 + startDay
-        val endDateVal = endMonth * 100 + endDay
-
-        return if (startDateVal <= endDateVal) {
-            currentDateVal in startDateVal..endDateVal
-        } else {
-            currentDateVal >= startDateVal || currentDateVal <= endDateVal
-        }
-    }
-
-    private fun updateAppIcon(targetAliasName: String) {
-        val pm = packageManager
-        val allAliases = arrayOf(
-            "$packageName.MainActivityDefault",
-            "$packageName.MainActivityMakarSankranti",
-            "$packageName.MainActivityMahaShivaratri",
-            "$packageName.MainActivityHoli",
-            "$packageName.MainActivityRamNavami",
-            "$packageName.MainActivityRathYatra",
-            "$packageName.MainActivityRakshaBandhan",
-            "$packageName.MainActivityKrishnaJanmashtami",
-            "$packageName.MainActivityGaneshChaturthi",
-            "$packageName.MainActivityDurgaPuja",
-            "$packageName.MainActivityLaxmiPuja",
-            "$packageName.MainActivityDiwali"
-        )
-
-        for (alias in allAliases) {
-            pm.setComponentEnabledSetting(
-                ComponentName(this, alias),
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP
-            )
-        }
-
-        pm.setComponentEnabledSetting(
-            ComponentName(this, targetAliasName),
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-            PackageManager.DONT_KILL_APP
-        )
     }
 }
 
@@ -274,15 +194,14 @@ class PdfStorageBridge(private val context: Context) {
 
                 val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val folder = File(downloads, "Bhajo Store")
-                val isFolderReady = folder.exists() || folder.mkdirs()
-                if (!isFolderReady) {
+                if (!folder.exists() && !folder.mkdirs()) {
                     throw IllegalStateException("Could not create Downloads folder")
                 }
                 FileOutputStream(File(folder, safeName)).use { it.write(bytes) }
             }
             "OK"
         } catch (error: Exception) {
-            "ERROR: ${error.message ?: "Unable to save PDF"}"
+            "ERROR ${error.message ?: "Unable to save PDF"}"
         }
     }
 }
