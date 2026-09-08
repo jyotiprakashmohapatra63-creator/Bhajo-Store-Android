@@ -13,8 +13,10 @@
         android:roundIcon="@drawable/bhajo_store_icon"
         android:usesCleartextTraffic="false">
         
+        <!-- Main Activity (Directly open nahi hoga, alias se chalega) -->
         <activity
             android:name=".MainActivity"
+            android:enabled="false"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +24,73 @@
             </intent-filter>
         </activity>
         
+        <!-- 1. Default Icon -->
+        <activity-alias
+            android:name=".MainActivityDefault"
+            android:enabled="true"
+            android:exported="true"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- 2. Makar Sankranti -->
+        <activity-alias android:name=".MainActivityMakarSankranti" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 3. Maha Shivaratri -->
+        <activity-alias android:name=".MainActivityMahaShivaratri" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 4. Holi -->
+        <activity-alias android:name=".MainActivityHoli" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 5. Ram Navami -->
+        <activity-alias android:name=".MainActivityRamNavami" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 6. Rath Yatra -->
+        <activity-alias android:name=".MainActivityRathYatra" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 7. Raksha Bandhan -->
+        <activity-alias android:name=".MainActivityRakshaBandhan" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 8. Krishna Janmashtami -->
+        <activity-alias android:name=".MainActivityKrishnaJanmashtami" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 9. Ganesh Chaturthi -->
+        <activity-alias android:name=".MainActivityGaneshChaturthi" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 10. Durga Puja -->
+        <activity-alias android:name=".MainActivityDurgaPuja" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 11. Laxmi Puja -->
+        <activity-alias android:name=".MainActivityLaxmiPuja" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
+        <!-- 12. Diwali -->
+        <activity-alias android:name=".MainActivityDiwali" android:enabled="false" android:exported="true" android:targetActivity=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+
     </application>
 
 </manifest>
