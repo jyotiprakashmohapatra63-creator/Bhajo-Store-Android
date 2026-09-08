@@ -22,12 +22,13 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.Calendar
 
+data class FestivalItem(val alias: String, val year: Int, val month: Int, val day: Int)
+
 class MainActivity : Activity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ଫେଷ୍ଟିଭାଲ୍ ତାରିଖ ଅନୁସାରେ ଆଇକନ୍ ଅଟୋ-ଅପଡେଟ୍ ହେବା ଫଙ୍କସନ୍
         checkAndSwitchAppIcon()
 
         actionBar?.hide()
@@ -47,13 +48,11 @@ class MainActivity : Activity() {
         webView.settings.allowFileAccess = true
         webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         
-        // ସମସ୍ତ ଫୋନ୍ ସ୍କ୍ରିନ୍ ହିସାବରେ ପେଜ୍ ଫିଟ୍ ହେବା ପାଇଁ
         webView.settings.useWideViewPort = true
         webView.settings.loadWithOverviewMode = true
 
         webView.webChromeClient = WebChromeClient()
 
-        // WebViewClient with Error Handling & Offline Popup support
         webView.webViewClient = object : WebViewClient() {
             override fun onReceivedError(
                 view: WebView,
@@ -172,62 +171,58 @@ class MainActivity : Activity() {
         val calendar = Calendar.getInstance()
         val currentYear = calendar.get(Calendar.YEAR)
 
-        // ଗୁଗଲ୍ କ୍ୟାଲେଣ୍ଡର ତାରିଖ ଆଧାରେ ୨୦୨୬, ୨୦୨୭ ଏବଂ ୨୦୨૮ ପାଇଁ ଫେଷ୍ଟିଭାଲ୍ ତାଲିକା (Alias, Year, Month, Day)
-        data class Festival(val alias: String, val year: Int, val month: Int, val day: Int)
-
         val festivals = listOf(
             // --- 2026 ---
-            Festival(".MainActivityMakarSankranti", 2026, Calendar.JANUARY, 15),
-            Festival(".MainActivityMahaShivaratri", 2026, Calendar.FEBRUARY, 15),
-            Festival(".MainActivityHoli", 2026, Calendar.MARCH, 3),
-            Festival(".MainActivityRamNavami", 2026, Calendar.MARCH, 26),
-            Festival(".MainActivityRathYatra", 2026, Calendar.JULY, 16),
-            Festival(".MainActivityRakshaBandhan", 2026, Calendar.AUGUST, 28),
-            Festival(".MainActivityKrishnaJanmashtami", 2026, Calendar.SEPTEMBER, 4),
-            Festival(".MainActivityGaneshChaturthi", 2026, Calendar.SEPTEMBER, 14),
-            Festival(".MainActivityDurgaPuja", 2026, Calendar.OCTOBER, 20),
-            Festival(".MainActivityDiwali", 2026, Calendar.NOVEMBER, 8),
+            FestivalItem(".MainActivityMakarSankranti", 2026, Calendar.JANUARY, 15),
+            FestivalItem(".MainActivityMahaShivaratri", 2026, Calendar.FEBRUARY, 15),
+            FestivalItem(".MainActivityHoli", 2026, Calendar.MARCH, 3),
+            FestivalItem(".MainActivityRamNavami", 2026, Calendar.MARCH, 26),
+            FestivalItem(".MainActivityRathYatra", 2026, Calendar.JULY, 16),
+            FestivalItem(".MainActivityRakshaBandhan", 2026, Calendar.AUGUST, 28),
+            FestivalItem(".MainActivityKrishnaJanmashtami", 2026, Calendar.SEPTEMBER, 4),
+            FestivalItem(".MainActivityGaneshChaturthi", 2026, Calendar.SEPTEMBER, 14),
+            FestivalItem(".MainActivityDurgaPuja", 2026, Calendar.OCTOBER, 20),
+            FestivalItem(".MainActivityDiwali", 2026, Calendar.NOVEMBER, 8),
 
             // --- 2027 ---
-            Festival(".MainActivityMakarSankranti", 2027, Calendar.JANUARY, 15),
-            Festival(".MainActivityMahaShivaratri", 2027, Calendar.MARCH, 6),
-            Festival(".MainActivityHoli", 2027, Calendar.MARCH, 22),
-            Festival(".MainActivityRamNavami", 2027, Calendar.APRIL, 15),
-            Festival(".MainActivityRathYatra", 2027, Calendar.JULY, 5),
-            Festival(".MainActivityRakshaBandhan", 2027, Calendar.AUGUST, 17),
-            Festival(".MainActivityGaneshChaturthi", 2027, Calendar.SEPTEMBER, 4),
-            Festival(".MainActivityDurgaPuja", 2027, Calendar.OCTOBER, 9), // Vijaya Dashami / Main period
-            Festival(".MainActivityDiwali", 2027, Calendar.OCTOBER, 29),
+            FestivalItem(".MainActivityMakarSankranti", 2027, Calendar.JANUARY, 15),
+            FestivalItem(".MainActivityMahaShivaratri", 2027, Calendar.MARCH, 6),
+            FestivalItem(".MainActivityHoli", 2027, Calendar.MARCH, 22),
+            FestivalItem(".MainActivityRamNavami", 2027, Calendar.APRIL, 15),
+            FestivalItem(".MainActivityRathYatra", 2027, Calendar.JULY, 5),
+            FestivalItem(".MainActivityRakshaBandhan", 2027, Calendar.AUGUST, 17),
+            FestivalItem(".MainActivityGaneshChaturthi", 2027, Calendar.SEPTEMBER, 4),
+            FestivalItem(".MainActivityDurgaPuja", 2027, Calendar.OCTOBER, 9),
+            FestivalItem(".MainActivityDiwali", 2027, Calendar.OCTOBER, 29),
 
             // --- 2028 ---
-            Festival(".MainActivityMakarSankranti", 2028, Calendar.JANUARY, 15),
-            Festival(".MainActivityMahaShivaratri", 2028, Calendar.FEBRUARY, 23),
-            Festival(".MainActivityHoli", 2028, Calendar.MARCH, 11),
-            Festival(".MainActivityRamNavami", 2028, Calendar.APRIL, 3),
-            Festival(".MainActivityRathYatra", 2028, Calendar.JUNE, 24),
-            Festival(".MainActivityRakshaBandhan", 2028, Calendar.AUGUST, 5),
-            Festival(".MainActivityGaneshChaturthi", 2028, Calendar.AUGUST, 23),
-            Festival(".MainActivityDurgaPuja", 2028, Calendar.SEPTEMBER, 27), // Vijaya Dashami
-            Festival(".MainActivityDiwali", 2028, Calendar.OCTOBER, 17)
-        ]
+            FestivalItem(".MainActivityMakarSankranti", 2028, Calendar.JANUARY, 15),
+            FestivalItem(".MainActivityMahaShivaratri", 2028, Calendar.FEBRUARY, 23),
+            FestivalItem(".MainActivityHoli", 2028, Calendar.MARCH, 11),
+            FestivalItem(".MainActivityRamNavami", 2028, Calendar.APRIL, 3),
+            FestivalItem(".MainActivityRathYatra", 2028, Calendar.JUNE, 24),
+            FestivalItem(".MainActivityRakshaBandhan", 2028, Calendar.AUGUST, 5),
+            FestivalItem(".MainActivityGaneshChaturthi", 2028, Calendar.AUGUST, 23),
+            FestivalItem(".MainActivityDurgaPuja", 2028, Calendar.SEPTEMBER, 27),
+            FestivalItem(".MainActivityDiwali", 2028, Calendar.OCTOBER, 17)
+        )
 
         var activeAlias: String? = null
 
         for (fest in festivals) {
-            // କେବଳ ଚଳିତ ବର୍ଷର ଫେଷ୍ଟିଭାଲ୍ ଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିବ
             if (fest.year == currentYear) {
                 val startDate = Calendar.getInstance().apply {
                     set(Calendar.YEAR, fest.year)
                     set(Calendar.MONTH, fest.month)
                     set(Calendar.DAY_OF_MONTH, fest.day)
-                    add(Calendar.DAY_OF_MONTH, -10) // ୧୦ ଦିନ ପୂର୍ବରୁ
+                    add(Calendar.DAY_OF_MONTH, -10)
                 }
 
                 val endDate = Calendar.getInstance().apply {
                     set(Calendar.YEAR, fest.year)
                     set(Calendar.MONTH, fest.month)
                     set(Calendar.DAY_OF_MONTH, fest.day)
-                    add(Calendar.DAY_OF_MONTH, 2) // ପର୍ବ ସରିବାର ୨ ଦିନ ପରେ
+                    add(Calendar.DAY_OF_MONTH, 2)
                 }
 
                 if (calendar.after(startDate) && calendar.before(endDate)) {
@@ -237,7 +232,6 @@ class MainActivity : Activity() {
             }
         }
 
-        // ଆଇକନ୍ ସୁଇଚ୍ କରିବା ଲଜିକ୍
         val pm = packageManager
         val packageName = packageName
 
